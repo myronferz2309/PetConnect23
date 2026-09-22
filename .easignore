@@ -1,0 +1,17 @@
+# Dependencies & Build Caches
+node_modules/
+.expo/
+dist/
+web-build/
+.git/
+
+# Native folders (generated automatically on EAS builder)
+/ios
+/android
+
+# Debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+
