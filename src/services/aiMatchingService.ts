@@ -8,6 +8,7 @@ import {
   PreferredPetSize,
   ActivityLevel,
 } from '../types';
+import { knnRecommendationService } from './knnRecommendationService';
 
 /**
  * ============================================================================
@@ -593,7 +594,7 @@ export function generateAIExplanation(
  */
 export const aiMatchingService = {
   /**
-   * Run the K-Nearest Neighbors (KNN) algorithm on candidate pets
+   * Run the authoritative Colab-trained 22-dimensional K-Nearest Neighbors (KNN) algorithm
    *
    * @param candidatePets List of pets from Firestore
    * @param questionnaire User responses from the 10-step questionnaire
@@ -604,112 +605,7 @@ export const aiMatchingService = {
     questionnaire: AIMatchQuestionnaire,
     k: number = DEFAULT_K
   ): Promise<AIMatchResult[]> {
-    if (!candidatePets || candidatePets.length === 0) {
-      return [];
-    }
-
-    // ------------------------------------------------------------------------
-    // Step 1: Availability Constraint Filtering
-    // (Prune pets already adopted or pending review)
-    // ------------------------------------------------------------------------
-    const availablePets = candidatePets.filter(
-      (p) => p.status !== 'adopted' && p.status !== 'pending'
-    );
-
-    // Hard filter on explicit species selection if user specified a single category
-    const eligiblePets = availablePets.filter((p) => {
-      if (questionnaire.petPreference === 'any') return true;
-      if (questionnaire.petPreference === 'dogs') return p.category === 'dogs';
-      if (questionnaire.petPreference === 'cats') return p.category === 'cats';
-      if (questionnaire.petPreference === 'others') return p.category !== 'dogs' && p.category !== 'cats';
-      return true;
-    });
-
-    if (eligiblePets.length === 0) {
-      return [];
-    }
-
-    // ------------------------------------------------------------------------
-    // Step 2: Vector Encoding
-    // Transform user questionnaire & candidate pets into ℝ¹⁸ vector space
-    // ------------------------------------------------------------------------
-    const userVector = encodeUserToVector(questionnaire);
-
-    interface CandidateNeighbor {
-      pet: Pet;
-      petVector: number[];
-      distance: number;
-      similarity: number;
-      score: number;
-    }
-
-    // ------------------------------------------------------------------------
-    // Step 3: Compute Euclidean Distance for each candidate pet
-    // d(U, P_i) = √( Σ w_j * (u_j - p_ij)² )
-    // ------------------------------------------------------------------------
-    const candidateNeighbors: CandidateNeighbor[] = eligiblePets.map((pet) => {
-      const petVector = encodePetToVector(pet, questionnaire.location);
-      const distance = calculateEuclideanDistance(userVector, petVector, KNN_METRIC_WEIGHTS);
-      const { similarity, score } = convertDistanceToSimilarity(distance);
-
-      return {
-        pet,
-        petVector,
-        distance: parseFloat(distance.toFixed(4)),
-        similarity,
-        score,
-      };
-    });
-
-    // ------------------------------------------------------------------------
-    // Step 4: Sort Ascending by Euclidean Distance
-    // (The closest pets in vector space are ranked first)
-    // ------------------------------------------------------------------------
-    candidateNeighbors.sort((a, b) => a.distance - b.distance);
-
-    // ------------------------------------------------------------------------
-    // Step 5: Select Top-K Nearest Neighbors
-    // ------------------------------------------------------------------------
-    const topKNeighbors = candidateNeighbors.slice(0, Math.max(1, k));
-
-    // ------------------------------------------------------------------------
-    // Step 6: Construct Final Results with ML Metadata
-    // ------------------------------------------------------------------------
-    const results: AIMatchResult[] = topKNeighbors.map((neighbor, index) => {
-      const breakdown = buildScoreBreakdownFromVectors(
-        userVector,
-        neighbor.petVector,
-        neighbor.pet,
-        questionnaire
-      );
-
-      const { explanation, consideration } = generateAIExplanation(
-        neighbor.pet,
-        questionnaire,
-        neighbor.score,
-        breakdown
-      );
-
-      return {
-        pet: neighbor.pet,
-        score: neighbor.score,
-        scoreBreakdown: breakdown,
-        aiExplanation: explanation,
-        aiConsideration: consideration,
-        // KNN ML Metadata for viva demonstration & debugging
-        distance: neighbor.distance,
-        similarity: neighbor.similarity,
-        vectorCoordinates: neighbor.petVector,
-        userVectorCoordinates: userVector,
-        neighborRank: index + 1,
-        kValue: k,
-        featureNames: [...KNN_FEATURE_NAMES],
-        metricWeights: [...KNN_METRIC_WEIGHTS],
-        normalizationScaleDistance: NORMALIZATION_SCALE_DISTANCE,
-      };
-    });
-
-    return results;
+    return knnRecommendationService.findRecommendations(candidatePets, questionnaire, k);
   },
 
   /**
@@ -717,19 +613,6 @@ export const aiMatchingService = {
    * Returns feature encoding and distance calculation between a user and a pet
    */
   inspectMatch(pet: Pet, questionnaire: AIMatchQuestionnaire) {
-    const userVector = encodeUserToVector(questionnaire);
-    const petVector = encodePetToVector(pet, questionnaire.location);
-    const distance = calculateEuclideanDistance(userVector, petVector, KNN_METRIC_WEIGHTS);
-    const { similarity, score } = convertDistanceToSimilarity(distance);
-
-    return {
-      featureNames: [...KNN_FEATURE_NAMES],
-      metricWeights: [...KNN_METRIC_WEIGHTS],
-      userVector,
-      petVector,
-      distance: parseFloat(distance.toFixed(4)),
-      similarity,
-      score,
-    };
+    return knnRecommendationService.inspectMatch(pet, questionnaire);
   },
 };

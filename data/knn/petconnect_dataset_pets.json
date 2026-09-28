@@ -1,0 +1,1343 @@
+[
+  {
+    "id": "bella-1",
+    "name": "Bella",
+    "breed": "Golden Retriever",
+    "age": "2 years",
+    "gender": "female",
+    "location": "San Francisco, CA",
+    "category": "dogs",
+    "description": "Bella is a sweet and energetic Golden Retriever who loves long walks on the beach and playing fetch.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 0,
+    "health": {
+      "vaccinated": false,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "House-trained",
+      "Vaccinated",
+      "Good with Kids"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790614067956
+  },
+  {
+    "id": "milo-2",
+    "name": "Milo",
+    "breed": "Domestic Shorthair",
+    "age": "6 months",
+    "gender": "male",
+    "location": "Oakland, CA",
+    "category": "cats",
+    "description": "Milo is a curious affectionate tabby kitten who loves toys and cozy laps.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 0,
+    "health": {
+      "vaccinated": false,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Playful",
+      "Litter-trained",
+      "Cuddle Bug"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790610467956
+  },
+  {
+    "id": "oliver-3",
+    "name": "Oliver",
+    "breed": "French Bulldog",
+    "age": "1 year",
+    "gender": "male",
+    "location": "San Jose, CA",
+    "category": "dogs",
+    "description": "Oliver is a charming French Bulldog who enjoys short strolls and cuddling.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 0,
+    "health": {
+      "vaccinated": false,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Calm",
+      "Apartment Friendly",
+      "Affectionate"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790606867957
+  },
+  {
+    "id": "pet-1788106318234-voia",
+    "name": "Dogeshhh bahiiii",
+    "breed": "Street boguu",
+    "age": "6 months",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Too friendly and cuteness overload!!:)",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 6090,
+    "health": {
+      "vaccinated": true,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Newly Added",
+      "Adoptable",
+      "Good With Children",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Good With Children",
+      "Other Pets Friendly",
+      "Yard Required"
+    ],
+    "createdAt": 1790603267957
+  },
+  {
+    "id": "pet-1788111839033-oa0j",
+    "name": "Jack",
+    "breed": "Oggy sa bhav",
+    "age": "8 months",
+    "gender": "male",
+    "location": "Kurla",
+    "category": "cats",
+    "description": "Obedient, cuteness overload!!:(",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 89000,
+    "health": {
+      "vaccinated": false,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Newly Added",
+      "Adoptable",
+      "Good With Children",
+      "Yard Required"
+    ],
+    "adoptionRequirements": [
+      "Good With Children",
+      "Yard Required",
+      "Experienced Owner",
+      "Active Home"
+    ],
+    "createdAt": 1790599667957
+  },
+  {
+    "id": "pet-1788117058954-n067",
+    "name": "Snowball",
+    "breed": "Florida white",
+    "age": "1 year",
+    "gender": "female",
+    "location": "Mahim mumbai",
+    "category": "rabbits",
+    "description": "Snowball is a friendly and wonderful pet looking for a loving forever home.",
+    "imageUrl": "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 2000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Newly Added",
+      "Adoptable"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790596067957
+  },
+  {
+    "id": "pet-1788117230695-xfgl",
+    "name": "Chimni",
+    "breed": "White crowned",
+    "age": "10 months",
+    "gender": "female",
+    "location": "Vasai ,Ramedi",
+    "category": "birds",
+    "description": "Chimni is a friendly and wonderful pet looking for a loving forever home.",
+    "imageUrl": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 5000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Newly Added",
+      "Adoptable"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790592467957
+  },
+  {
+    "id": "pet-1788141328676-9hvz",
+    "name": "Fishuu",
+    "breed": "Gold fish",
+    "age": "1 month",
+    "gender": "female",
+    "location": "Khopwadi",
+    "category": "others",
+    "description": "Beautiful as Moon... Be gold fish, Be silver fish, but don't be selfish!!",
+    "imageUrl": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 23000,
+    "health": {
+      "vaccinated": false,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Newly Added",
+      "Adoptable",
+      "Active Home",
+      "Indoor Only"
+    ],
+    "adoptionRequirements": [
+      "Active Home",
+      "Indoor Only",
+      "Other Pets Friendly"
+    ],
+    "createdAt": 1790588867957
+  },
+  {
+    "id": "pet-1789966092971-qgrp",
+    "name": "Apple",
+    "breed": "Golden",
+    "age": "6 months",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Apple is a friendly and wonderful pet looking for a loving forever home.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 0,
+    "health": {
+      "vaccinated": true,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Newly Added",
+      "Adoptable",
+      "Apartment Friendly"
+    ],
+    "adoptionRequirements": [
+      "Apartment Friendly"
+    ],
+    "createdAt": 1790585267957
+  },
+  {
+    "id": "synthetic-001",
+    "name": "Rocky",
+    "breed": "Labrador Retriever",
+    "age": "3 years",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Rocky is a friendly Labrador Retriever looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 5000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Active",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Active Home"
+    ],
+    "createdAt": 1790581667957
+  },
+  {
+    "id": "synthetic-002",
+    "name": "Daisy",
+    "breed": "Indie",
+    "age": "2 years",
+    "gender": "female",
+    "location": "Vasai, Maharashtra",
+    "category": "dogs",
+    "description": "Daisy is a friendly Indie looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790578067957
+  },
+  {
+    "id": "synthetic-003",
+    "name": "Max",
+    "breed": "Beagle",
+    "age": "1 years",
+    "gender": "male",
+    "location": "Thane, Maharashtra",
+    "category": "dogs",
+    "description": "Max is a friendly Beagle looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 2500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Active",
+      "Good With Kids",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Active Home"
+    ],
+    "createdAt": 1790574467957
+  },
+  {
+    "id": "synthetic-004",
+    "name": "Zoe",
+    "breed": "Shih Tzu",
+    "age": "2 years",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Zoe is a friendly Shih Tzu looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 3500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790570867957
+  },
+  {
+    "id": "synthetic-005",
+    "name": "Bruno",
+    "breed": "German Shepherd",
+    "age": "4 years",
+    "gender": "male",
+    "location": "Navi Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Bruno is a friendly German Shepherd looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 7000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Active",
+      "Good With Kids",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Active Home"
+    ],
+    "createdAt": 1790567267957
+  },
+  {
+    "id": "synthetic-006",
+    "name": "Tuffy",
+    "breed": "Pug",
+    "age": "5 years",
+    "gender": "female",
+    "location": "Borivali, Mumbai",
+    "category": "dogs",
+    "description": "Tuffy is a friendly Pug looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 3500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790563667957
+  },
+  {
+    "id": "synthetic-007",
+    "name": "Charlie",
+    "breed": "Cocker Spaniel",
+    "age": "2 years",
+    "gender": "male",
+    "location": "Pune, Maharashtra",
+    "category": "dogs",
+    "description": "Charlie is a friendly Cocker Spaniel looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 4500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790560067957
+  },
+  {
+    "id": "synthetic-008",
+    "name": "Duke",
+    "breed": "Husky",
+    "age": "2 years",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Duke is a friendly Husky looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 6500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Active",
+      "Good With Kids"
+    ],
+    "adoptionRequirements": [
+      "Active Home"
+    ],
+    "createdAt": 1790556467957
+  },
+  {
+    "id": "synthetic-009",
+    "name": "Peaches",
+    "breed": "Cavalier King Charles",
+    "age": "2 years",
+    "gender": "male",
+    "location": "Pune, Maharashtra",
+    "category": "dogs",
+    "description": "Peaches is a friendly Cavalier King Charles looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 4000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790552867957
+  },
+  {
+    "id": "synthetic-010",
+    "name": "Rex",
+    "breed": "Doberman",
+    "age": "3 years",
+    "gender": "female",
+    "location": "Navi Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Rex is a friendly Doberman looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 7500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Active",
+      "Good With Kids",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Active Home"
+    ],
+    "createdAt": 1790549267957
+  },
+  {
+    "id": "synthetic-011",
+    "name": "Luna",
+    "breed": "Persian",
+    "age": "2 years",
+    "gender": "male",
+    "location": "Thane, Maharashtra",
+    "category": "cats",
+    "description": "Luna is a friendly Persian looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 3000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790545667957
+  },
+  {
+    "id": "synthetic-012",
+    "name": "Coco",
+    "breed": "Siamese",
+    "age": "4 years",
+    "gender": "female",
+    "location": "Pune, Maharashtra",
+    "category": "cats",
+    "description": "Coco is a friendly Siamese looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 4500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790542067957
+  },
+  {
+    "id": "synthetic-013",
+    "name": "Simba",
+    "breed": "Maine Coon",
+    "age": "3 years",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "cats",
+    "description": "Simba is a friendly Maine Coon looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 6000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790538467957
+  },
+  {
+    "id": "synthetic-014",
+    "name": "Oscar",
+    "breed": "Bengal",
+    "age": "2 years",
+    "gender": "female",
+    "location": "Andheri, Mumbai",
+    "category": "cats",
+    "description": "Oscar is a friendly Bengal looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 5500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Active",
+      "Good With Kids"
+    ],
+    "adoptionRequirements": [
+      "Active Home"
+    ],
+    "createdAt": 1790534867957
+  },
+  {
+    "id": "synthetic-015",
+    "name": "Nala",
+    "breed": "Ragdoll",
+    "age": "1 years",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "cats",
+    "description": "Nala is a friendly Ragdoll looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 4000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790531267957
+  },
+  {
+    "id": "synthetic-016",
+    "name": "Ruby",
+    "breed": "British Shorthair",
+    "age": "5 years",
+    "gender": "female",
+    "location": "Vasai, Maharashtra",
+    "category": "cats",
+    "description": "Ruby is a friendly British Shorthair looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 5000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790527667957
+  },
+  {
+    "id": "synthetic-017",
+    "name": "Misty",
+    "breed": "Indie Cat",
+    "age": "3 years",
+    "gender": "male",
+    "location": "Vasai, Maharashtra",
+    "category": "cats",
+    "description": "Misty is a friendly Indie Cat looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1200,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790524067957
+  },
+  {
+    "id": "synthetic-018",
+    "name": "Mochi",
+    "breed": "Scottish Fold",
+    "age": "2 years",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "cats",
+    "description": "Mochi is a friendly Scottish Fold looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 5000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790520467957
+  },
+  {
+    "id": "synthetic-019",
+    "name": "Snowy",
+    "breed": "Himalayan",
+    "age": "4 years",
+    "gender": "male",
+    "location": "Borivali, Mumbai",
+    "category": "cats",
+    "description": "Snowy is a friendly Himalayan looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 4500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790516867957
+  },
+  {
+    "id": "synthetic-020",
+    "name": "Lily",
+    "breed": "Tabby",
+    "age": "1 years 6 months",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "cats",
+    "description": "Lily is a friendly Tabby looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1800,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790513267957
+  },
+  {
+    "id": "synthetic-021",
+    "name": "Maya",
+    "breed": "Holland Lop",
+    "age": "2 years",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "rabbits",
+    "description": "Maya is a friendly Holland Lop looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1800,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790509667957
+  },
+  {
+    "id": "synthetic-022",
+    "name": "Poppy",
+    "breed": "Netherland Dwarf",
+    "age": "1 years",
+    "gender": "female",
+    "location": "Thane, Maharashtra",
+    "category": "rabbits",
+    "description": "Poppy is a friendly Netherland Dwarf looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790506067957
+  },
+  {
+    "id": "synthetic-023",
+    "name": "Peanut",
+    "breed": "Mini Rex",
+    "age": "3 years",
+    "gender": "male",
+    "location": "Pune, Maharashtra",
+    "category": "rabbits",
+    "description": "Peanut is a friendly Mini Rex looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1700,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790502467957
+  },
+  {
+    "id": "synthetic-024",
+    "name": "Bambi",
+    "breed": "Lionhead",
+    "age": "10 months",
+    "gender": "female",
+    "location": "Vasai, Maharashtra",
+    "category": "rabbits",
+    "description": "Bambi is a friendly Lionhead looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1300,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790498867957
+  },
+  {
+    "id": "synthetic-025",
+    "name": "Kiwi",
+    "breed": "Dutch Rabbit",
+    "age": "1 years",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "rabbits",
+    "description": "Kiwi is a friendly Dutch Rabbit looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1400,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790495267957
+  },
+  {
+    "id": "synthetic-026",
+    "name": "Rio",
+    "breed": "Budgerigar",
+    "age": "8 months",
+    "gender": "female",
+    "location": "Vasai, Maharashtra",
+    "category": "birds",
+    "description": "Rio is a friendly Budgerigar looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 900,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Playful"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790491667957
+  },
+  {
+    "id": "synthetic-027",
+    "name": "Sunny",
+    "breed": "Cockatiel",
+    "age": "3 years",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "birds",
+    "description": "Sunny is a friendly Cockatiel looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 2500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790488067958
+  },
+  {
+    "id": "synthetic-028",
+    "name": "Mango",
+    "breed": "Lovebird",
+    "age": "1 years",
+    "gender": "female",
+    "location": "Navi Mumbai, Maharashtra",
+    "category": "birds",
+    "description": "Mango is a friendly Lovebird looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1800,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Active",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790484467958
+  },
+  {
+    "id": "synthetic-029",
+    "name": "Coco Bird",
+    "breed": "Indian Ringneck",
+    "age": "2 years",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "birds",
+    "description": "Coco Bird is a friendly Indian Ringneck looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 2200,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Active",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790480867958
+  },
+  {
+    "id": "synthetic-030",
+    "name": "Goldie",
+    "breed": "Finch",
+    "age": "1 years",
+    "gender": "female",
+    "location": "Thane, Maharashtra",
+    "category": "birds",
+    "description": "Goldie is a friendly Finch looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 700,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790477267958
+  },
+  {
+    "id": "synthetic-031",
+    "name": "Bubbles",
+    "breed": "Goldfish",
+    "age": "6 months",
+    "gender": "male",
+    "location": "Mumbai, Maharashtra",
+    "category": "others",
+    "description": "Bubbles is a friendly Goldfish looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 500,
+    "health": {
+      "vaccinated": false,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790473667958
+  },
+  {
+    "id": "synthetic-032",
+    "name": "Spark",
+    "breed": "Guppy",
+    "age": "4 months",
+    "gender": "female",
+    "location": "Thane, Maharashtra",
+    "category": "others",
+    "description": "Spark is a friendly Guppy looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 300,
+    "health": {
+      "vaccinated": false,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Other Pets Friendly"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790470067958
+  },
+  {
+    "id": "synthetic-033",
+    "name": "Hammy",
+    "breed": "Betta Fish",
+    "age": "5 months",
+    "gender": "male",
+    "location": "Vasai, Maharashtra",
+    "category": "others",
+    "description": "Hammy is a friendly Betta Fish looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 450,
+    "health": {
+      "vaccinated": false,
+      "dewormed": false,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790466467958
+  },
+  {
+    "id": "synthetic-034",
+    "name": "Pico",
+    "breed": "Hamster",
+    "age": "10 months",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "others",
+    "description": "Pico is a friendly Hamster looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 800,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790462867958
+  },
+  {
+    "id": "synthetic-035",
+    "name": "Pepper",
+    "breed": "Guinea Pig",
+    "age": "1 years 6 months",
+    "gender": "male",
+    "location": "Pune, Maharashtra",
+    "category": "others",
+    "description": "Pepper is a friendly Guinea Pig looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1200,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Indoor Only"
+    ],
+    "createdAt": 1790459267958
+  },
+  {
+    "id": "synthetic-036",
+    "name": "Cleo",
+    "breed": "Indie",
+    "age": "1 years 6 months",
+    "gender": "female",
+    "location": "Kurla, Mumbai",
+    "category": "dogs",
+    "description": "Cleo is a friendly Indie looking for a loving forever home. This pet has a high activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1800,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": false
+    },
+    "tags": [
+      "Friendly",
+      "Playful",
+      "Active",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [
+      "Active Home"
+    ],
+    "createdAt": 1790455667958
+  },
+  {
+    "id": "synthetic-037",
+    "name": "Jack Jr",
+    "breed": "Maine Coon Mix",
+    "age": "3 years",
+    "gender": "male",
+    "location": "Navi Mumbai, Maharashtra",
+    "category": "cats",
+    "description": "Jack Jr is a friendly Maine Coon Mix looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 4200,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790452067958
+  },
+  {
+    "id": "synthetic-038",
+    "name": "Leo",
+    "breed": "Labrador Mix",
+    "age": "8 years",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Leo is a friendly Labrador Mix looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 2000,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Good With Kids",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790448467958
+  },
+  {
+    "id": "synthetic-039",
+    "name": "Milo Jr",
+    "breed": "Indie Cat",
+    "age": "6 years",
+    "gender": "male",
+    "location": "Thane, Maharashtra",
+    "category": "cats",
+    "description": "Milo Jr is a friendly Indie Cat looking for a loving forever home. This pet has a low activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 1200,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790444867958
+  },
+  {
+    "id": "synthetic-040",
+    "name": "Teddy",
+    "breed": "Golden Retriever Mix",
+    "age": "2 years 6 months",
+    "gender": "female",
+    "location": "Mumbai, Maharashtra",
+    "category": "dogs",
+    "description": "Teddy is a friendly Golden Retriever Mix looking for a loving forever home. This pet has a moderate activity level and enjoys a safe, caring environment.",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "status": "available",
+    "adoptionFee": 5500,
+    "health": {
+      "vaccinated": true,
+      "dewormed": true,
+      "spayedNeutered": true
+    },
+    "tags": [
+      "Friendly",
+      "Calm",
+      "Playful",
+      "Good With Kids",
+      "Other Pets Friendly",
+      "House-trained"
+    ],
+    "adoptionRequirements": [],
+    "createdAt": 1790441267958
+  }
+]

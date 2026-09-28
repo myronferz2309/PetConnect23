@@ -68,24 +68,36 @@ const ADOPTION_PREFERENCES_OPTIONS = [
 ];
 
 const FEATURE_DISPLAY_NAMES: Record<string, string> = {
-  species_dog: 'Dog',
-  species_cat: 'Cat',
-  species_other: 'Other Species',
+  // Colab 22-Dimensional Feature Space
+  species_dog: 'Species: Dog',
+  species_cat: 'Species: Cat',
+  species_bird: 'Species: Bird',
+  species_fish: 'Species: Fish',
+  species_other: 'Species: Other',
   age_normalized: 'Normalized Age',
+  size_small: 'Size: Small',
+  size_medium: 'Size: Medium',
+  size_large: 'Size: Large',
+  activity_low: 'Energy: Low',
+  activity_moderate: 'Energy: Moderate',
+  activity_high: 'Energy: High',
+  trait_friendly: 'Trait: Friendly',
+  trait_calm: 'Trait: Calm',
+  trait_playful: 'Trait: Playful',
+  trait_active: 'Trait: Active',
+  trait_kid_friendly: 'Trait: Kid-Friendly',
+  trait_pet_friendly: 'Trait: Pet-Friendly',
+  trait_house_trained: 'Trait: House-Trained',
+  trait_apartment_friendly: 'Trait: Apt-Friendly',
+  trait_special_needs: 'Trait: Special Needs',
+  location_index: 'Location Proximity',
+  // Fallbacks
   size: 'Pet Size',
   activity_level: 'Activity Level',
   time_commitment: 'Time Commitment',
   experience_level: 'Experience Level',
   living_space: 'Living Space',
   location_proximity: 'Location Proximity',
-  trait_friendly: 'Friendly',
-  trait_calm: 'Calm',
-  trait_playful: 'Playful',
-  trait_active: 'Active',
-  trait_kid_friendly: 'Kid-Friendly',
-  trait_pet_friendly: 'Pet-Friendly',
-  trait_house_trained: 'House-Trained',
-  trait_special_needs: 'Special Needs',
 };
 
 function toSuperscript(num: number): string {
@@ -885,10 +897,10 @@ export default function AIMatchScreen() {
                               </View>
                               <View style={styles.knnMetricRight}>
                                 <Text style={styles.knnMetricVal}>
-                                  ℝ{item.vectorCoordinates?.length ? `${item.vectorCoordinates.length}` : '¹⁸'}
+                                  ℝ{item.vectorCoordinates?.length ? `${toSuperscript(item.vectorCoordinates.length)}` : '²²'}
                                 </Text>
                                 <Text style={styles.knnMetricSubVal}>
-                                  {item.vectorCoordinates?.length || 18} normalized features
+                                  {item.vectorCoordinates?.length || 22} normalized features
                                 </Text>
                               </View>
                             </View>
@@ -919,11 +931,13 @@ export default function AIMatchScreen() {
                               const pVec = item.vectorCoordinates || [];
                               const weights = item.metricWeights || [];
                               const featNames = item.featureNames || [];
-                              const vectorDimension = uVec.length || pVec.length || 18;
-                              const dScale = item.normalizationScaleDistance || 2.9247;
+                              const vectorDimension = uVec.length || pVec.length || 22;
+                              const dScale = item.normalizationScaleDistance || 1.0;
                               const dist = typeof item.distance === 'number' ? item.distance : 0;
                               const sim = typeof item.similarity === 'number' ? item.similarity : ((item.score || 0) / 100);
 
+                              const isWeighted = weights.length > 0 && weights.some((w) => Math.abs(w - 1.0) > 0.001);
+                              let sumDiffSq = 0;
                               let sumWeightedDiffSq = 0;
                               const componentRows = [];
                               for (let j = 0; j < vectorDimension; j++) {
@@ -933,6 +947,7 @@ export default function AIMatchScreen() {
                                 const diff = uVal - pVal;
                                 const diffSq = diff * diff;
                                 const weightedDiffSq = wVal * diffSq;
+                                sumDiffSq += diffSq;
                                 sumWeightedDiffSq += weightedDiffSq;
                                 const featKey = featNames[j] || `dim_${j}`;
                                 const featLabel = FEATURE_DISPLAY_NAMES[featKey] || featKey;
@@ -1010,7 +1025,9 @@ export default function AIMatchScreen() {
                                     <Text style={styles.vecBlockBadge}>5. EUCLIDEAN DISTANCE CALCULATION</Text>
                                     <Text style={styles.vecFormulaHeader}>Formula:</Text>
                                     <Text style={styles.vecFormulaBox} selectable>
-                                      d(U, P) = √( Σ w_j · (u_j − p_j)² )
+                                      {isWeighted
+                                        ? 'd(U, P) = √( Σ w_j · (u_j − p_j)² )'
+                                        : 'd(U, P) = √( Σ (u_j − p_j)² )'}
                                     </Text>
 
                                     <Text style={styles.vecSubHeading}>Feature-by-Feature Difference Breakdown:</Text>
@@ -1021,11 +1038,17 @@ export default function AIMatchScreen() {
                                           <View style={styles.vecTableRowHeader}>
                                             <Text style={styles.vecTableIndex}>{row.index}.</Text>
                                             <Text style={styles.vecTableFeature}>{row.label}</Text>
-                                            <Text style={styles.vecTableWeight}>w: {row.wVal}</Text>
+                                            {isWeighted ? (
+                                              <Text style={styles.vecTableWeight}>w: {row.wVal}</Text>
+                                            ) : (
+                                              <Text style={styles.vecTableWeight}>Δ: {(row.uVal - row.pVal).toFixed(2)}</Text>
+                                            )}
                                           </View>
                                           <View style={styles.vecTableRowSub}>
                                             <Text style={styles.vecTableMathText} selectable>
-                                              U: {row.uVal.toFixed(2)}  •  P: {row.pVal.toFixed(2)}  •  w·(U−P)²: {row.weightedDiffSq.toFixed(4)}
+                                              {isWeighted
+                                                ? `U: ${row.uVal.toFixed(2)}  •  P: ${row.pVal.toFixed(2)}  •  w·(U−P)²: ${row.weightedDiffSq.toFixed(4)}`
+                                                : `U: ${row.uVal.toFixed(2)}  •  P: ${row.pVal.toFixed(2)}  •  (U−P)²: ${row.diffSq.toFixed(4)}`}
                                             </Text>
                                           </View>
                                         </View>
@@ -1035,10 +1058,12 @@ export default function AIMatchScreen() {
                                     {/* Distance Summation & Final Result */}
                                     <View style={styles.vecDistanceResultCard}>
                                       <Text style={styles.vecSumFormulaText} selectable>
-                                        Σ w_j · (u_j − p_j)² = {sumWeightedDiffSq.toFixed(4)}
+                                        {isWeighted
+                                          ? `Σ w_j · (u_j − p_j)² = ${sumWeightedDiffSq.toFixed(4)}`
+                                          : `Σ (u_j − p_j)² = ${sumDiffSq.toFixed(4)}`}
                                       </Text>
                                       <Text style={styles.vecFinalDistanceText} selectable>
-                                        d(U, P) = √{sumWeightedDiffSq.toFixed(4)} = {dist.toFixed(4)}
+                                        d(U, P) = √{(isWeighted ? sumWeightedDiffSq : sumDiffSq).toFixed(4)} = {dist.toFixed(4)}
                                       </Text>
                                     </View>
                                   </View>
@@ -1049,27 +1074,55 @@ export default function AIMatchScreen() {
                                   <View style={styles.vecBlock}>
                                     <Text style={styles.vecBlockBadge}>6. VECTOR SIMILARITY CALCULATION</Text>
                                     <Text style={styles.vecFormulaHeader}>Formula:</Text>
-                                    <Text style={styles.vecFormulaBox} selectable>
-                                      Similarity = max(0, 1 − (d / d_scale))
-                                    </Text>
-                                    <Text style={styles.vecScaleNote}>
-                                      Where d_scale (Normalization Scale Distance) = {dScale.toFixed(4)}
-                                    </Text>
+                                    {dScale === 1.0 ? (
+                                      <>
+                                        <Text style={styles.vecFormulaBox} selectable>
+                                          Similarity = 1 / (1 + d(U, P))
+                                        </Text>
+                                        <Text style={styles.vecScaleNote}>
+                                          Reciprocal distance transformation in ℝ²² vector space.
+                                        </Text>
 
-                                    <View style={styles.vecSubstitutionCard}>
-                                      <Text style={styles.vecSubstLine} selectable>
-                                        Similarity = 1 − ({dist.toFixed(4)} / {dScale.toFixed(4)})
-                                      </Text>
-                                      <Text style={styles.vecSubstLine} selectable>
-                                        {'           '}= 1 − {(dist / dScale).toFixed(4)}
-                                      </Text>
-                                      <Text style={styles.vecSubstLine} selectable>
-                                        {'           '}= {sim.toFixed(4)}
-                                      </Text>
-                                      <Text style={styles.vecSubstHighlight} selectable>
-                                        = {(sim * 100).toFixed(1)}% Match Score
-                                      </Text>
-                                    </View>
+                                        <View style={styles.vecSubstitutionCard}>
+                                          <Text style={styles.vecSubstLine} selectable>
+                                            Similarity = 1 / (1 + {dist.toFixed(4)})
+                                          </Text>
+                                          <Text style={styles.vecSubstLine} selectable>
+                                            {'           '}= 1 / {(1 + dist).toFixed(4)}
+                                          </Text>
+                                          <Text style={styles.vecSubstLine} selectable>
+                                            {'           '}= {sim.toFixed(4)}
+                                          </Text>
+                                          <Text style={styles.vecSubstHighlight} selectable>
+                                            = {(sim * 100).toFixed(1)}% Match Score
+                                          </Text>
+                                        </View>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Text style={styles.vecFormulaBox} selectable>
+                                          Similarity = max(0, 1 − (d / d_scale))
+                                        </Text>
+                                        <Text style={styles.vecScaleNote}>
+                                          Where d_scale (Normalization Scale Distance) = {dScale.toFixed(4)}
+                                        </Text>
+
+                                        <View style={styles.vecSubstitutionCard}>
+                                          <Text style={styles.vecSubstLine} selectable>
+                                            Similarity = 1 − ({dist.toFixed(4)} / {dScale.toFixed(4)})
+                                          </Text>
+                                          <Text style={styles.vecSubstLine} selectable>
+                                            {'           '}= 1 − {(dist / dScale).toFixed(4)}
+                                          </Text>
+                                          <Text style={styles.vecSubstLine} selectable>
+                                            {'           '}= {sim.toFixed(4)}
+                                          </Text>
+                                          <Text style={styles.vecSubstHighlight} selectable>
+                                            = {(sim * 100).toFixed(1)}% Match Score
+                                          </Text>
+                                        </View>
+                                      </>
+                                    )}
                                   </View>
 
                                   <View style={styles.vecInnerDivider} />

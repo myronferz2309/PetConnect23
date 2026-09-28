@@ -1,0 +1,71 @@
+{
+  "questionnaire": {
+    "petPreference": "dogs",
+    "livingSituation": "apartment",
+    "location": "andheri, mumbai",
+    "household": "family_children",
+    "experience": "some_experience",
+    "activityLevel": "high",
+    "timeAvailable": "2_to_4h",
+    "preferredAge": "young",
+    "preferredSize": "medium",
+    "adoptionPreferences": [
+      "friendly",
+      "playful",
+      "kid_friendly",
+      "apartment_friendly"
+    ]
+  },
+  "recommendations": [
+    {
+      "rank": 1,
+      "pet_id": "synthetic-003",
+      "name": "Max",
+      "species": "dogs",
+      "breed": "Beagle",
+      "location": "Thane, Maharashtra",
+      "distance": 1.6585082321837843,
+      "similarity": 0.37615080062346384
+    },
+    {
+      "rank": 2,
+      "pet_id": "synthetic-014",
+      "name": "Oscar",
+      "species": "cats",
+      "breed": "Bengal",
+      "location": "Andheri, Mumbai",
+      "distance": 1.7320508075688772,
+      "similarity": 0.36602540378443865
+    },
+    {
+      "rank": 3,
+      "pet_id": "synthetic-036",
+      "name": "Cleo",
+      "species": "dogs",
+      "breed": "Indie",
+      "location": "Kurla, Mumbai",
+      "distance": 1.7565937415147572,
+      "similarity": 0.36276654950631093
+    },
+    {
+      "rank": 4,
+      "pet_id": "synthetic-008",
+      "name": "Duke",
+      "species": "dogs",
+      "breed": "Husky",
+      "location": "Mumbai, Maharashtra",
+      "distance": 1.7842851423995423,
+      "similarity": 0.3591586166128745
+    },
+    {
+      "rank": 5,
+      "pet_id": "bella-1",
+      "name": "Bella",
+      "species": "dogs",
+      "breed": "Golden Retriever",
+      "location": "San Francisco, CA",
+      "distance": 2.1237241067597865,
+      "similarity": 0.3201307048327299
+    }
+  ]
+}
