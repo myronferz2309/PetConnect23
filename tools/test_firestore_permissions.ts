@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+declare const process: { exit(code?: number): void };
 
 /**
  * ============================================================================
