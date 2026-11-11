@@ -40,6 +40,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# scratch files
+scratch/
+
 example
 
 # generated native folders
