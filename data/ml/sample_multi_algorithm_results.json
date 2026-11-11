@@ -1,0 +1,130 @@
+{
+  "adopter": {
+    "id": "sample-adopter-001",
+    "petPreference": "dogs",
+    "livingSituation": "apartment",
+    "location": "Mumbai, Maharashtra",
+    "household": "family_children",
+    "experience": "some_experience",
+    "activityLevel": "moderate",
+    "timeAvailable": "1_to_2h",
+    "preferredAge": "young",
+    "preferredSize": "medium",
+    "adoptionPreferences": [
+      "Friendly",
+      "Playful",
+      "Kid-friendly",
+      "House-trained"
+    ]
+  },
+  "results": [
+    {
+      "pet_id": "pet-1788106318234-voia",
+      "name": "Dogeshhh bahiiii",
+      "species": "dogs",
+      "breed": "Street boguu",
+      "knn_similarity": 0.3323,
+      "random_forest_probability": 0.8945,
+      "logistic_regression_probability": 0.9109,
+      "final_score": 0.6737,
+      "final_match_percentage": 67.4,
+      "rank": 1
+    },
+    {
+      "pet_id": "pet-1789966092971-qgrp",
+      "name": "Apple",
+      "species": "dogs",
+      "breed": "Golden",
+      "knn_similarity": 0.3323,
+      "random_forest_probability": 0.5538,
+      "logistic_regression_probability": 0.7543,
+      "final_score": 0.5153,
+      "final_match_percentage": 51.5,
+      "rank": 2
+    },
+    {
+      "pet_id": "bella-1",
+      "name": "Bella",
+      "species": "dogs",
+      "breed": "Golden Retriever",
+      "knn_similarity": 0.2885,
+      "random_forest_probability": 0.5101,
+      "logistic_regression_probability": 0.7768,
+      "final_score": 0.4881,
+      "final_match_percentage": 48.8,
+      "rank": 3
+    },
+    {
+      "pet_id": "oliver-3",
+      "name": "Oliver",
+      "species": "dogs",
+      "breed": "French Bulldog",
+      "knn_similarity": 0.2595,
+      "random_forest_probability": 0.602,
+      "logistic_regression_probability": 0.3143,
+      "final_score": 0.3931,
+      "final_match_percentage": 39.3,
+      "rank": 4
+    },
+    {
+      "pet_id": "milo-2",
+      "name": "Milo",
+      "species": "cats",
+      "breed": "Domestic Shorthair",
+      "knn_similarity": 0.2494,
+      "random_forest_probability": 0.1931,
+      "logistic_regression_probability": 0.0282,
+      "final_score": 0.1744,
+      "final_match_percentage": 17.4,
+      "rank": 5
+    },
+    {
+      "pet_id": "pet-1788117058954-n067",
+      "name": "Snowball",
+      "species": "rabbits",
+      "breed": "Florida white",
+      "knn_similarity": 0.2895,
+      "random_forest_probability": 0.1294,
+      "logistic_regression_probability": 0.0496,
+      "final_score": 0.1735,
+      "final_match_percentage": 17.3,
+      "rank": 6
+    },
+    {
+      "pet_id": "pet-1788117230695-xfgl",
+      "name": "Chimni",
+      "species": "birds",
+      "breed": "White crowned",
+      "knn_similarity": 0.2854,
+      "random_forest_probability": 0.1353,
+      "logistic_regression_probability": 0.0338,
+      "final_score": 0.17,
+      "final_match_percentage": 17,
+      "rank": 7
+    },
+    {
+      "pet_id": "pet-1788111839033-oa0j",
+      "name": "Jack",
+      "species": "cats",
+      "breed": "Oggy sa bhav",
+      "knn_similarity": 0.2311,
+      "random_forest_probability": 0.1316,
+      "logistic_regression_probability": 0.0124,
+      "final_score": 0.1416,
+      "final_match_percentage": 14.2,
+      "rank": 8
+    },
+    {
+      "pet_id": "pet-1788141328676-9hvz",
+      "name": "Fishuu",
+      "species": "others",
+      "breed": "Gold fish",
+      "knn_similarity": 0.223,
+      "random_forest_probability": 0.0222,
+      "logistic_regression_probability": 0.0013,
+      "final_score": 0.0973,
+      "final_match_percentage": 9.7,
+      "rank": 9
+    }
+  ]
+}

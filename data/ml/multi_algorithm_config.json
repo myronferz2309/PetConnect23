@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0-multi-algo",
+  "created_at": "2026-09-30T14:56:48.518Z",
+  "dataset_records": 49,
+  "real_records": 9,
+  "synthetic_records": 40,
+  "training_pairs": 1470,
+  "features_count": 25,
+  "random_seed": 42,
+  "algorithms": [
+    "KNN",
+    "Random Forest",
+    "Logistic Regression"
+  ],
+  "weights": {
+    "knn": 0.4,
+    "random_forest": 0.35,
+    "logistic_regression": 0.25
+  },
+  "ensemble_formula": "final_score = 0.40 * knn_similarity + 0.35 * random_forest_probability + 0.25 * logistic_regression_probability",
+  "academic_disclaimer": "The current system demonstrates ML-based compatibility prediction using synthetic compatibility labels. These labels should not be interpreted as real adoption outcomes."
+}

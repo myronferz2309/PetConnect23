@@ -1,0 +1,77 @@
+{
+  "experiment_date": "2026-09-30T14:56:48.522Z",
+  "random_seed": 42,
+  "dataset": {
+    "total_pets": 49,
+    "real_pets": 9,
+    "synthetic_pets": 40,
+    "total_pairs": 1470,
+    "train_pairs": 1170,
+    "test_pairs": 300
+  },
+  "data_leakage_prevention": "Group-based split by pet_id (no pet appears in both train and test splits)",
+  "models": {
+    "logistic_regression": {
+      "test_metrics": {
+        "accuracy": 0.85,
+        "precision": 0.8466,
+        "recall": 0.8922,
+        "f1": 0.8688,
+        "roc_auc": 0.9419,
+        "confusion_matrix": {
+          "tp": 149,
+          "fp": 27,
+          "tn": 106,
+          "fn": 18
+        }
+      },
+      "cv_5fold_metrics": {
+        "accuracy": 0.8803,
+        "precision": 0.8795,
+        "recall": 0.9338,
+        "f1": 0.9052,
+        "roc_auc": 0.962
+      }
+    },
+    "random_forest": {
+      "test_metrics": {
+        "accuracy": 0.88,
+        "precision": 0.9018,
+        "recall": 0.8802,
+        "f1": 0.8909,
+        "roc_auc": 0.9543,
+        "confusion_matrix": {
+          "tp": 147,
+          "fp": 16,
+          "tn": 117,
+          "fn": 20
+        }
+      },
+      "cv_5fold_metrics": {
+        "accuracy": 0.915,
+        "precision": 0.9166,
+        "recall": 0.9459,
+        "f1": 0.9306,
+        "roc_auc": 0.9751
+      }
+    }
+  },
+  "comparison_table": [
+    {
+      "algorithm": "Random Forest",
+      "accuracy": 0.88,
+      "precision": 0.9018,
+      "recall": 0.8802,
+      "f1": 0.8909,
+      "roc_auc": 0.9543
+    },
+    {
+      "algorithm": "Logistic Regression",
+      "accuracy": 0.85,
+      "precision": 0.8466,
+      "recall": 0.8922,
+      "f1": 0.8688,
+      "roc_auc": 0.9419
+    }
+  ]
+}

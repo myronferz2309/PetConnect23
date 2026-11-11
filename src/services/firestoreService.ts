@@ -394,6 +394,89 @@ export const firestoreService = {
     const appDocRef = doc(firestoreDb, 'applications', applicationId);
     await updateDoc(appDocRef, { status: 'rejected' });
   },
+  /**
+   * Finalize pet adoption with Cash on Delivery:
+   * 1. Validates that pet exists in Firestore.
+   * 2. Double-adoption prevention: checks that status === 'available'.
+   * 3. Updates Firestore pet record: status = 'adopted'.
+   * 4. Creates an adoption record in 'applications' with paymentMethod = 'Cash on Delivery', status = 'accepted'.
+   */
+  async adoptPet(
+    petId: string,
+    adopterId: string,
+    adopterName: string,
+    adopterEmail: string,
+    phoneNumber: string = '',
+    address: string = '',
+    paymentMethod: string = 'Cash on Delivery'
+  ): Promise<AdoptionApplication> {
+    if (!db || !isFirebaseConfigured()) {
+      throw new Error('Firebase is not configured.');
+    }
+    const firestoreDb = db;
+
+    const petDocRef = doc(firestoreDb, 'pets', petId);
+    const petSnap = await getDoc(petDocRef);
+
+    if (!petSnap.exists()) {
+      throw new Error('This pet is no longer available.');
+    }
+
+    const petData = petSnap.data() as Pet;
+
+    // Double-adoption check:
+    if (petData.status !== 'available') {
+      throw new Error('This pet is no longer available.');
+    }
+
+    const appId = 'adopt-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6);
+    const appDocRef = doc(firestoreDb, 'applications', appId);
+
+    const now = Date.now();
+    const adoptionRecord: AdoptionApplication = {
+      id: appId,
+      petId: petData.id,
+      petName: petData.name,
+      petBreed: petData.breed,
+      petImageUrl: petData.imageUrl,
+      petOwnerId: petData.ownerId || SYSTEM_SHELTER_OWNER_ID,
+      applicantId: adopterId,
+      applicantName: adopterName,
+      applicantEmail: adopterEmail,
+      phoneNumber: phoneNumber || '+91 98765 43210',
+      address: address || petData.location,
+      experience: 'Verified Adopter',
+      reason: 'Direct Pet Adoption (Cash on Delivery)',
+      status: 'accepted',
+      paymentMethod: paymentMethod || 'Cash on Delivery',
+      submittedAt: 'Just now',
+      createdAt: now,
+    };
+
+    const batch = writeBatch(firestoreDb);
+    // 1. Update pet status in Firestore to 'adopted'
+    batch.update(petDocRef, {
+      status: 'adopted',
+      updatedAt: now,
+    });
+    // 2. Save adoption application record with Cash on Delivery
+    batch.set(appDocRef, sanitizeForFirestore(adoptionRecord));
+
+    // 3. Automatically reject any other pending applications for this pet
+    const competingQuery = query(
+      collection(firestoreDb, 'applications'),
+      where('petId', '==', petId)
+    );
+    const competingSnap = await getDocs(competingQuery);
+    competingSnap.forEach((docSnap) => {
+      if (docSnap.id !== appId && docSnap.data().status === 'pending') {
+        batch.update(docSnap.ref, { status: 'rejected' });
+      }
+    });
+
+    await batch.commit();
+    return adoptionRecord;
+  },
 
   /**
    * Toggle saved pet ID in Firestore user document

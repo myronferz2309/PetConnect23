@@ -238,6 +238,13 @@ export default function MyApplicationsScreen() {
                       </View>
                     </View>
 
+                    {/* Payment Method */}
+                    {Boolean(app.paymentMethod) && (
+                      <View style={styles.paymentMethodCardRow}>
+                        <Text style={styles.paymentMethodCardLabel}>Payment Method: </Text>
+                        <Text style={styles.paymentMethodCardValue}>{app.paymentMethod}</Text>
+                      </View>
+                    )},
                     {/* Reason snippet */}
                     {app.reason ? (
                       <View style={styles.reasonBox}>
@@ -949,5 +956,24 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '700',
+  },
+  paymentMethodCardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 140, 97, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  paymentMethodCardLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: PetConnectColors.primary,
+  },
+  paymentMethodCardValue: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: PetConnectColors.onSurface,
   },
 });

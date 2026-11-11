@@ -1,0 +1,129 @@
+{
+  "project": "PetConnect",
+  "model": "KNN Recommendation",
+  "k": 5,
+  "distance_metric": "euclidean",
+  "vector_dimension": 22,
+  "feature_names": [
+    "species_dog",
+    "species_cat",
+    "species_bird",
+    "species_fish",
+    "species_other",
+    "age_normalized",
+    "size_small",
+    "size_medium",
+    "size_large",
+    "activity_low",
+    "activity_moderate",
+    "activity_high",
+    "trait_friendly",
+    "trait_calm",
+    "trait_playful",
+    "trait_active",
+    "trait_kid_friendly",
+    "trait_pet_friendly",
+    "trait_house_trained",
+    "trait_apartment_friendly",
+    "trait_special_needs",
+    "location_index"
+  ],
+  "species_categories": [
+    "dog",
+    "cat",
+    "bird",
+    "fish",
+    "other"
+  ],
+  "size_categories": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "activity_categories": [
+    "low",
+    "moderate",
+    "high"
+  ],
+  "locations": [
+    "andheri, mumbai",
+    "borivali, mumbai",
+    "khopwadi",
+    "kurla",
+    "kurla, mumbai",
+    "mahim mumbai",
+    "mumbai, maharashtra",
+    "navi mumbai, maharashtra",
+    "oakland, ca",
+    "pune, maharashtra",
+    "san francisco, ca",
+    "san jose, ca",
+    "thane, maharashtra",
+    "vasai ,ramedi",
+    "vasai, maharashtra"
+  ],
+  "age_min": 1.0,
+  "age_max": 96.0,
+  "questionnaire_schema": {
+    "petPreference": [
+      "dogs",
+      "cats",
+      "others",
+      "any"
+    ],
+    "livingSituation": [
+      "apartment",
+      "house",
+      "other"
+    ],
+    "location": "text",
+    "household": [
+      "alone",
+      "couple",
+      "family",
+      "family_children",
+      "seniors"
+    ],
+    "experience": [
+      "first_time",
+      "some_experience",
+      "experienced"
+    ],
+    "activityLevel": [
+      "low",
+      "moderate",
+      "high"
+    ],
+    "timeAvailable": [
+      "under_1h",
+      "1_to_2h",
+      "2_to_4h",
+      "4h_plus"
+    ],
+    "preferredAge": [
+      "puppy_kitten",
+      "young",
+      "adult",
+      "senior",
+      "any"
+    ],
+    "preferredSize": [
+      "small",
+      "medium",
+      "large",
+      "any"
+    ],
+    "adoptionPreferences": [
+      "friendly",
+      "playful",
+      "calm",
+      "kid_friendly",
+      "pet_friendly",
+      "special_needs",
+      "house_trained",
+      "apartment_friendly"
+    ]
+  },
+  "dataset_size": 49,
+  "dataset_note": "9 real PetConnect records + 40 synthetic records for experimentation."
+}

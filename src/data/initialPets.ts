@@ -132,3 +132,6 @@ export const INITIAL_USER: UserProfile = {
   createdAt: Date.now() - 86400000 * 30,
   updatedAt: Date.now(),
 };
+
+export const initialPets: Pet[] = INITIAL_PETS;
+export default INITIAL_PETS;

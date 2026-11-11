@@ -21,6 +21,7 @@ export default function SearchScreen() {
   const [selectedGender, setSelectedGender] = useState<'all' | PetGender>('all');
 
   const filteredPets = pets.filter((pet) => {
+    const isAvailable = (pet.status || 'available') === 'available';
     const matchesSearch =
       searchQuery.trim() === '' ||
       pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,7 +38,7 @@ export default function SearchScreen() {
     const matchesGender =
       selectedGender === 'all' || pet.gender === selectedGender;
 
-    return matchesSearch && matchesCategory && matchesGender;
+    return isAvailable && matchesSearch && matchesCategory && matchesGender;
   });
 
   return (

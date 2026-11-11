@@ -43,6 +43,10 @@ interface PetContextType {
   acceptRequest: (applicationId: string, petId: string) => Promise<void>;
   rejectRequest: (applicationId: string, petOwnerId: string) => Promise<void>;
   updateUserProfile: (profileUpdates: Partial<UserProfile>) => Promise<void>;
+  adoptPet: (
+    petId: string,
+    details?: { name?: string; phone?: string; address?: string }
+  ) => Promise<AdoptionApplication>;
 
   // Direct Chat Actions
   sendMessage: (applicationId: string, text: string) => Promise<ChatMessage>;
@@ -519,6 +523,62 @@ export const PetProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       showToast('Application marked as declined.');
     }
   };
+  const adoptPet = async (
+    petId: string,
+    details?: { name?: string; phone?: string; address?: string }
+  ): Promise<AdoptionApplication> => {
+    if (!userProfile) {
+      openAuthModal();
+      throw new Error('Please sign in to adopt.');
+    }
+
+    const targetPet = pets.find((p) => p.id === petId);
+    if (!targetPet || targetPet.status !== 'available') {
+      throw new Error('This pet is no longer available.');
+    }
+
+    if (targetPet.ownerId && userProfile.uid && targetPet.ownerId === userProfile.uid) {
+      throw new Error('You cannot adopt a pet that you listed.');
+    }
+
+    const adopterId = userProfile.uid || 'demo-user-sarah';
+    const adopterName = details?.name?.trim() || userProfile.name || 'Adopter';
+    const adopterEmail = userProfile.email || 'adopter@example.com';
+    const phone = details?.phone?.trim() || userProfile.phone || '+91 98765 43210';
+    const address = details?.address?.trim() || userProfile.address || targetPet.location;
+
+    let adoptionRecord: AdoptionApplication;
+
+    const now = Date.now();
+    adoptionRecord = {
+      id: 'adopt-' + now,
+      petId: targetPet.id,
+      petName: targetPet.name,
+      petBreed: targetPet.breed,
+      petImageUrl: targetPet.imageUrl,
+      petOwnerId: targetPet.ownerId || SYSTEM_SHELTER_OWNER_ID,
+      applicantId: adopterId,
+      applicantName: adopterName,
+      applicantEmail: adopterEmail,
+      phoneNumber: phone,
+      address: address,
+      experience: 'Verified Adopter',
+      reason: 'Direct Pet Adoption',
+      status: 'accepted',
+      submittedAt: 'Just now',
+      createdAt: now,
+    };
+
+    // 2. Local state refresh
+    setPets((prev) =>
+      prev.map((p) => (p.id === petId ? { ...p, status: 'adopted' } : p))
+    );
+    setApplications((prev) => [adoptionRecord, ...prev]);
+    setSubmittedApplication(adoptionRecord);
+
+    showToast(`🎉 Congratulations! ${targetPet.name} has been adopted.`);
+    return adoptionRecord;
+  };
 
   // -------------------------------------------------------------
   // DIRECT CHAT ACTIONS
@@ -674,6 +734,7 @@ export const PetProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addPet,
         deletePet,
         submitApplication,
+        adoptPet,
         acceptRequest,
         rejectRequest,
         updateUserProfile,

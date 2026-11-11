@@ -9,6 +9,7 @@ import {
   ActivityLevel,
 } from '../types';
 import { knnRecommendationService } from './knnRecommendationService';
+import { multiAlgorithmService } from './multiAlgorithmService';
 
 /**
  * ============================================================================
@@ -594,7 +595,8 @@ export function generateAIExplanation(
  */
 export const aiMatchingService = {
   /**
-   * Run the authoritative Colab-trained 22-dimensional K-Nearest Neighbors (KNN) algorithm
+   * Run the authoritative Multi-Algorithm ML Recommendation Engine
+   * (KNN + Random Forest + Logistic Regression with 0.40 / 0.35 / 0.25 Ensemble)
    *
    * @param candidatePets List of pets from Firestore
    * @param questionnaire User responses from the 10-step questionnaire
@@ -605,7 +607,7 @@ export const aiMatchingService = {
     questionnaire: AIMatchQuestionnaire,
     k: number = DEFAULT_K
   ): Promise<AIMatchResult[]> {
-    return knnRecommendationService.findRecommendations(candidatePets, questionnaire, k);
+    return multiAlgorithmService.findRecommendations(candidatePets, questionnaire, k);
   },
 
   /**
@@ -613,6 +615,6 @@ export const aiMatchingService = {
    * Returns feature encoding and distance calculation between a user and a pet
    */
   inspectMatch(pet: Pet, questionnaire: AIMatchQuestionnaire) {
-    return knnRecommendationService.inspectMatch(pet, questionnaire);
+    return multiAlgorithmService.inspectMatch(pet, questionnaire);
   },
 };

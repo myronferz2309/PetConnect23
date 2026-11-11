@@ -50,6 +50,7 @@ export default function HomeScreen() {
 
   // Filter logic matching the original app
   const filteredPets = pets.filter((pet) => {
+    const isAvailable = (pet.status || 'available') === 'available';
     const matchesCategory =
       selectedCategory === 'all' || pet.category === selectedCategory;
 
@@ -66,7 +67,7 @@ export default function HomeScreen() {
 
     const matchesFeatured = !showOnlyFeatured || pet.isFeatured;
 
-    return matchesCategory && matchesSearch && matchesFeatured;
+    return isAvailable && matchesCategory && matchesSearch && matchesFeatured;
   });
 
   const handleCategoryPress = (catId: PetCategory) => {

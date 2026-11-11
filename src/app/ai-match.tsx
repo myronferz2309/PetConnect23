@@ -49,6 +49,11 @@ import {
   PreferredPetSize,
 } from '../types';
 import { aiMatchingService } from '../services/aiMatchingService';
+import {
+  traceRandomForestTrees,
+  getLogisticRegressionTrace,
+  extractPairwiseFeatures,
+} from '../services/multiAlgorithmService';
 
 const { width } = Dimensions.get('window');
 
@@ -143,10 +148,30 @@ export default function AIMatchScreen() {
     'Good with children',
   ]);
 
+  const currentQuestionnaire: AIMatchQuestionnaire = {
+    petPreference,
+    livingSituation,
+    location,
+    household,
+    experience,
+    activityLevel,
+    timeAvailable,
+    preferredAge,
+    preferredSize,
+    adoptionPreferences,
+  };
+
   // Results state
   const [matchResults, setMatchResults] = useState<AIMatchResult[]>([]);
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
   const [expandedVectorPetId, setExpandedVectorPetId] = useState<string | null>(null);
+  const [expandedMlDebugPetId, setExpandedMlDebugPetId] = useState<string | null>(null);
+  const [expandedKnnCalcId, setExpandedKnnCalcId] = useState<string | null>(null);
+  const [showAllKnnFeaturesId, setShowAllKnnFeaturesId] = useState<string | null>(null);
+  const [expandedRfCalcId, setExpandedRfCalcId] = useState<string | null>(null);
+  const [showAllRfTreesId, setShowAllRfTreesId] = useState<string | null>(null);
+  const [expandedLrCalcId, setExpandedLrCalcId] = useState<string | null>(null);
+  const [showAllLrFeaturesId, setShowAllLrFeaturesId] = useState<string | null>(null);
 
   // Sync location with profile if updated
   useEffect(() => {
@@ -779,7 +804,7 @@ export default function AIMatchScreen() {
                       activeOpacity={0.8}
                     >
                       <Text style={styles.breakdownToggleText}>
-                        {isExpanded ? 'Hide Match Breakdown' : 'View Compatibility Breakdown'}
+                        {isExpanded ? 'Hide Match Breakdown' : 'View Match Breakdown'}
                       </Text>
                       <ChevronRight
                         size={16}
@@ -790,386 +815,738 @@ export default function AIMatchScreen() {
 
                     {isExpanded && (
                       <View style={styles.breakdownContainer}>
-                        {/* Section 1: Detailed Compatibility Rows */}
-                        <View style={styles.compatList}>
-                          {[
-                            { icon: '🏠', title: 'Living situation', data: item.scoreBreakdown.livingSituation },
-                            { icon: '🏃', title: 'Activity level', data: item.scoreBreakdown.activityLevel },
-                            { icon: '📍', title: 'Location proximity', data: item.scoreBreakdown.location },
-                            { icon: '👨‍👩‍👧', title: 'Household dynamic', data: item.scoreBreakdown.household },
-                            { icon: '🎓', title: 'Care experience', data: item.scoreBreakdown.experience },
-                            { icon: '❤️', title: 'Personality match', data: item.scoreBreakdown.personality },
-                          ].map((dim, dIdx) => (
-                            <View key={dIdx} style={styles.compatItem}>
-                              {/* Top Row: Icon + Title on left, Status Badge on right */}
-                              <View style={styles.compatItemHeader}>
-                                <View style={styles.compatTitleContainer}>
-                                  <Text style={styles.compatItemIcon}>{dim.icon}</Text>
-                                  <Text style={styles.compatItemTitle} numberOfLines={1}>
-                                    {dim.title}
-                                  </Text>
-                                </View>
-                                <View
-                                  style={[
-                                    styles.dimStatusPill,
-                                    dim.data.label === 'Excellent' && styles.dimStatusExcellent,
-                                    dim.data.label === 'Good' && styles.dimStatusGood,
-                                    dim.data.label === 'Compatible' && styles.dimStatusCompatible,
-                                    dim.data.label === 'Needs Attention' && styles.dimStatusNeedsAttention,
-                                  ]}
-                                >
-                                  <Text
-                                    style={[
-                                      styles.dimStatusText,
-                                      dim.data.label === 'Excellent' && styles.dimStatusTextExcellent,
-                                      dim.data.label === 'Good' && styles.dimStatusTextGood,
-                                      dim.data.label === 'Compatible' && styles.dimStatusTextCompatible,
-                                      dim.data.label === 'Needs Attention' && styles.dimStatusTextNeedsAttention,
-                                    ]}
-                                    numberOfLines={1}
-                                  >
-                                    {dim.data.label}
-                                  </Text>
-                                </View>
-                              </View>
-
-                              {/* Description: full width, naturally wraps */}
-                              <Text style={styles.compatItemDetail}>
-                                {dim.data.detail}
-                              </Text>
+                        {/* 0. MATCH BREAKDOWN HEADER */}
+                        <View style={styles.breakdownHeaderCard}>
+                          <Text style={styles.breakdownHeaderTitle}>MATCH BREAKDOWN</Text>
+                          <Text style={styles.breakdownPetName}>{pet.name}</Text>
+                          <Text style={styles.breakdownPetCategory}>
+                            {pet.category.toUpperCase()} • {pet.breed} • {pet.age}
+                          </Text>
+                          <View style={styles.breakdownScoreRow}>
+                            <Text style={styles.breakdownScoreLabel}>Final Match Percentage:</Text>
+                            <View style={styles.breakdownScoreBadge}>
+                              <Text style={styles.breakdownScoreBadgeText}>{item.score}% Match</Text>
                             </View>
-                          ))}
+                          </View>
                         </View>
 
-                        {/* Section 2: Dedicated KNN Matching Analysis Card */}
-                        {Boolean(item.distance !== undefined) && (
-                          <View style={styles.knnSectionCard}>
-                            {/* KNN Header Row: Responsive & uncrowded */}
-                            <View style={styles.knnHeaderRow}>
-                              <View style={styles.knnHeaderLeft}>
-                                <View style={styles.knnTitleRow}>
-                                  <Text style={styles.knnTitleIcon}>🧠</Text>
-                                  <Text style={styles.knnSectionTitle}>KNN MATCHING ANALYSIS</Text>
-                                </View>
-                                <View style={styles.knnKBadge}>
-                                  <Text style={styles.knnKBadgeText}>K = {item.kValue || 5}</Text>
-                                </View>
-                              </View>
-
-                              <View style={styles.knnHeaderRight}>
-                                <Text style={styles.knnRankBadgeText}>Rank #{item.neighborRank}</Text>
-                                <Text style={styles.knnRankSubText}>Nearest Neighbor</Text>
-                              </View>
+                        {/* 1. TOP CARD: FINAL ENSEMBLE SCORE */}
+                        <View style={styles.finalEnsembleCard}>
+                          <View style={styles.ensembleHeaderRow}>
+                            <Text style={styles.ensembleCardTitle}>FINAL ENSEMBLE SCORE</Text>
+                            <View style={styles.ensemblePill}>
+                              <Text style={styles.ensemblePillText}>3 ML Models</Text>
                             </View>
-
-                            <View style={styles.knnDivider} />
-
-                            {/* Metric 1: Euclidean Distance */}
-                            <View style={styles.knnMetricRow}>
-                              <View style={styles.knnMetricLeft}>
-                                <Text style={styles.knnMetricLabel}>Euclidean Distance</Text>
-                              </View>
-                              <View style={styles.knnMetricRight}>
-                                <Text style={styles.knnMetricVal}>
-                                  {typeof item.distance === 'number' ? item.distance.toFixed(4) : item.distance}
-                                </Text>
-                              </View>
-                            </View>
-
-                            {/* Metric 2: Vector Similarity */}
-                            <View style={styles.knnMetricRow}>
-                              <View style={styles.knnMetricLeft}>
-                                <Text style={styles.knnMetricLabel}>Vector Similarity</Text>
-                              </View>
-                              <View style={styles.knnMetricRight}>
-                                <Text style={styles.knnMetricVal}>
-                                  {typeof item.similarity === 'number'
-                                    ? `${(item.similarity * 100).toFixed(1)}%`
-                                    : `${item.score}%`}
-                                </Text>
-                              </View>
-                            </View>
-
-                            {/* Metric 3: Feature Vector Space */}
-                            <View style={styles.knnMetricRow}>
-                              <View style={styles.knnMetricLeft}>
-                                <Text style={styles.knnMetricLabel}>Feature Vector Space</Text>
-                              </View>
-                              <View style={styles.knnMetricRight}>
-                                <Text style={styles.knnMetricVal}>
-                                  ℝ{item.vectorCoordinates?.length ? `${toSuperscript(item.vectorCoordinates.length)}` : '²²'}
-                                </Text>
-                                <Text style={styles.knnMetricSubVal}>
-                                  {item.vectorCoordinates?.length || 22} normalized features
-                                </Text>
-                              </View>
-                            </View>
-
-                            {/* Intuitive Note */}
-                            <Text style={styles.knnNoticeText}>
-                              "Smaller distance means a closer match."
-                            </Text>
-
-                            {/* Expandable Vector Details Toggle Button */}
-                            <TouchableOpacity
-                              onPress={() =>
-                                setExpandedVectorPetId((prev) => (prev === pet.id ? null : pet.id))
-                              }
-                              style={styles.vectorToggleBtn}
-                              activeOpacity={0.75}
-                            >
-                              <Text style={styles.vectorToggleBtnText}>
-                                {expandedVectorPetId === pet.id
-                                  ? 'Hide Vector Details ▴'
-                                  : 'View Vector Details ▾'}
-                              </Text>
-                            </TouchableOpacity>
-
-                            {/* Collapsible Vector Data (Uses Real Vector Data) */}
-                            {expandedVectorPetId === pet.id && (() => {
-                              const uVec = item.userVectorCoordinates || [];
-                              const pVec = item.vectorCoordinates || [];
-                              const weights = item.metricWeights || [];
-                              const featNames = item.featureNames || [];
-                              const vectorDimension = uVec.length || pVec.length || 22;
-                              const dScale = item.normalizationScaleDistance || 1.0;
-                              const dist = typeof item.distance === 'number' ? item.distance : 0;
-                              const sim = typeof item.similarity === 'number' ? item.similarity : ((item.score || 0) / 100);
-
-                              const isWeighted = weights.length > 0 && weights.some((w) => Math.abs(w - 1.0) > 0.001);
-                              let sumDiffSq = 0;
-                              let sumWeightedDiffSq = 0;
-                              const componentRows = [];
-                              for (let j = 0; j < vectorDimension; j++) {
-                                const uVal = uVec[j] ?? 0;
-                                const pVal = pVec[j] ?? 0;
-                                const wVal = weights[j] ?? 1.0;
-                                const diff = uVal - pVal;
-                                const diffSq = diff * diff;
-                                const weightedDiffSq = wVal * diffSq;
-                                sumDiffSq += diffSq;
-                                sumWeightedDiffSq += weightedDiffSq;
-                                const featKey = featNames[j] || `dim_${j}`;
-                                const featLabel = FEATURE_DISPLAY_NAMES[featKey] || featKey;
-                                componentRows.push({
-                                  index: j,
-                                  label: featLabel,
-                                  uVal,
-                                  pVal,
-                                  wVal,
-                                  diffSq,
-                                  weightedDiffSq,
-                                });
-                              }
-
-                              return (
-                                <View style={styles.vectorDetailsBox}>
-                                  {/* 1. Feature Vector Space */}
-                                  <View style={styles.vecBlock}>
-                                    <Text style={styles.vecBlockBadge}>1. FEATURE VECTOR SPACE</Text>
-                                    <View style={styles.vecDimensionRow}>
-                                      <Text style={styles.vecDimensionBig}>
-                                        ℝ{toSuperscript(vectorDimension)}
-                                      </Text>
-                                      <Text style={styles.vecDimensionSub}>
-                                        {vectorDimension} normalized features
-                                      </Text>
-                                    </View>
-                                    <Text style={styles.vecDescriptionText}>
-                                      Both the user and pet are represented using the same {vectorDimension}-dimensional feature space. Each dimension represents a normalized feature used by KNN.
-                                    </Text>
-                                  </View>
-
-                                  <View style={styles.vecInnerDivider} />
-
-                                  {/* 2. Feature Index Mapping */}
-                                  <View style={styles.vecBlock}>
-                                    <Text style={styles.vecBlockBadge}>2. FEATURE INDEX MAPPING</Text>
-                                    <View style={styles.vecIndexContainer}>
-                                      {componentRows.map((row) => (
-                                        <View key={row.index} style={styles.vecIndexRow}>
-                                          <Text style={styles.vecIndexNumber}>{row.index}</Text>
-                                          <Text style={styles.vecIndexArrow}>→</Text>
-                                          <Text style={styles.vecIndexTitle}>{row.label}</Text>
-                                        </View>
-                                      ))}
-                                    </View>
-                                  </View>
-
-                                  <View style={styles.vecInnerDivider} />
-
-                                  {/* 3. User Feature Vector */}
-                                  <View style={styles.vecBlock}>
-                                    <Text style={styles.vecBlockBadge}>3. USER FEATURE VECTOR</Text>
-                                    <Text style={styles.vecCodeBlock} selectable>
-                                      {formatVectorLines(uVec, 'U')}
-                                    </Text>
-                                  </View>
-
-                                  <View style={styles.vecInnerDivider} />
-
-                                  {/* 4. Pet Feature Vector */}
-                                  <View style={styles.vecBlock}>
-                                    <Text style={styles.vecBlockBadge}>
-                                      4. PET FEATURE VECTOR — {pet.name.toUpperCase()}
-                                    </Text>
-                                    <Text style={styles.vecCodeBlock} selectable>
-                                      {formatVectorLines(pVec, 'P')}
-                                    </Text>
-                                  </View>
-
-                                  <View style={styles.vecInnerDivider} />
-
-                                  {/* 5. Euclidean Distance Calculation */}
-                                  <View style={styles.vecBlock}>
-                                    <Text style={styles.vecBlockBadge}>5. EUCLIDEAN DISTANCE CALCULATION</Text>
-                                    <Text style={styles.vecFormulaHeader}>Formula:</Text>
-                                    <Text style={styles.vecFormulaBox} selectable>
-                                      {isWeighted
-                                        ? 'd(U, P) = √( Σ w_j · (u_j − p_j)² )'
-                                        : 'd(U, P) = √( Σ (u_j − p_j)² )'}
-                                    </Text>
-
-                                    <Text style={styles.vecSubHeading}>Feature-by-Feature Difference Breakdown:</Text>
-                                    
-                                    <View style={styles.vecTableContainer}>
-                                      {componentRows.map((row) => (
-                                        <View key={row.index} style={styles.vecTableRow}>
-                                          <View style={styles.vecTableRowHeader}>
-                                            <Text style={styles.vecTableIndex}>{row.index}.</Text>
-                                            <Text style={styles.vecTableFeature}>{row.label}</Text>
-                                            {isWeighted ? (
-                                              <Text style={styles.vecTableWeight}>w: {row.wVal}</Text>
-                                            ) : (
-                                              <Text style={styles.vecTableWeight}>Δ: {(row.uVal - row.pVal).toFixed(2)}</Text>
-                                            )}
-                                          </View>
-                                          <View style={styles.vecTableRowSub}>
-                                            <Text style={styles.vecTableMathText} selectable>
-                                              {isWeighted
-                                                ? `U: ${row.uVal.toFixed(2)}  •  P: ${row.pVal.toFixed(2)}  •  w·(U−P)²: ${row.weightedDiffSq.toFixed(4)}`
-                                                : `U: ${row.uVal.toFixed(2)}  •  P: ${row.pVal.toFixed(2)}  •  (U−P)²: ${row.diffSq.toFixed(4)}`}
-                                            </Text>
-                                          </View>
-                                        </View>
-                                      ))}
-                                    </View>
-
-                                    {/* Distance Summation & Final Result */}
-                                    <View style={styles.vecDistanceResultCard}>
-                                      <Text style={styles.vecSumFormulaText} selectable>
-                                        {isWeighted
-                                          ? `Σ w_j · (u_j − p_j)² = ${sumWeightedDiffSq.toFixed(4)}`
-                                          : `Σ (u_j − p_j)² = ${sumDiffSq.toFixed(4)}`}
-                                      </Text>
-                                      <Text style={styles.vecFinalDistanceText} selectable>
-                                        d(U, P) = √{(isWeighted ? sumWeightedDiffSq : sumDiffSq).toFixed(4)} = {dist.toFixed(4)}
-                                      </Text>
-                                    </View>
-                                  </View>
-
-                                  <View style={styles.vecInnerDivider} />
-
-                                  {/* 6. Vector Similarity Calculation */}
-                                  <View style={styles.vecBlock}>
-                                    <Text style={styles.vecBlockBadge}>6. VECTOR SIMILARITY CALCULATION</Text>
-                                    <Text style={styles.vecFormulaHeader}>Formula:</Text>
-                                    {dScale === 1.0 ? (
-                                      <>
-                                        <Text style={styles.vecFormulaBox} selectable>
-                                          Similarity = 1 / (1 + d(U, P))
-                                        </Text>
-                                        <Text style={styles.vecScaleNote}>
-                                          Reciprocal distance transformation in ℝ²² vector space.
-                                        </Text>
-
-                                        <View style={styles.vecSubstitutionCard}>
-                                          <Text style={styles.vecSubstLine} selectable>
-                                            Similarity = 1 / (1 + {dist.toFixed(4)})
-                                          </Text>
-                                          <Text style={styles.vecSubstLine} selectable>
-                                            {'           '}= 1 / {(1 + dist).toFixed(4)}
-                                          </Text>
-                                          <Text style={styles.vecSubstLine} selectable>
-                                            {'           '}= {sim.toFixed(4)}
-                                          </Text>
-                                          <Text style={styles.vecSubstHighlight} selectable>
-                                            = {(sim * 100).toFixed(1)}% Match Score
-                                          </Text>
-                                        </View>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Text style={styles.vecFormulaBox} selectable>
-                                          Similarity = max(0, 1 − (d / d_scale))
-                                        </Text>
-                                        <Text style={styles.vecScaleNote}>
-                                          Where d_scale (Normalization Scale Distance) = {dScale.toFixed(4)}
-                                        </Text>
-
-                                        <View style={styles.vecSubstitutionCard}>
-                                          <Text style={styles.vecSubstLine} selectable>
-                                            Similarity = 1 − ({dist.toFixed(4)} / {dScale.toFixed(4)})
-                                          </Text>
-                                          <Text style={styles.vecSubstLine} selectable>
-                                            {'           '}= 1 − {(dist / dScale).toFixed(4)}
-                                          </Text>
-                                          <Text style={styles.vecSubstLine} selectable>
-                                            {'           '}= {sim.toFixed(4)}
-                                          </Text>
-                                          <Text style={styles.vecSubstHighlight} selectable>
-                                            = {(sim * 100).toFixed(1)}% Match Score
-                                          </Text>
-                                        </View>
-                                      </>
-                                    )}
-                                  </View>
-
-                                  <View style={styles.vecInnerDivider} />
-
-                                  {/* 7. Explain What the Score Means */}
-                                  <View style={styles.vecNoteBox}>
-                                    <Text style={styles.vecNoteLine}>
-                                      "Smaller Euclidean distance means the pet's feature vector is closer to the user's preferences."
-                                    </Text>
-                                    <Text style={styles.vecNoteLine}>
-                                      "The similarity percentage is derived from the calculated vector distance."
-                                    </Text>
-                                  </View>
-
-                                  <View style={styles.vecInnerDivider} />
-
-                                  {/* 8. KNN Parameters & Ranking Summary */}
-                                  <View style={styles.vecBlock}>
-                                    <Text style={styles.vecBlockBadge}>7. KNN PARAMETERS & NEIGHBOR RANK</Text>
-                                    <View style={styles.vecKnnSummaryCard}>
-                                      <View style={styles.vecKnnRow}>
-                                        <Text style={styles.vecKnnKey}>K Parameter:</Text>
-                                        <Text style={styles.vecKnnVal}>K = {item.kValue || 5}</Text>
-                                      </View>
-                                      <View style={styles.vecKnnRow}>
-                                        <Text style={styles.vecKnnKey}>Neighbor Rank:</Text>
-                                        <Text style={styles.vecKnnVal}>Rank #{item.neighborRank}</Text>
-                                      </View>
-                                      <View style={styles.vecKnnRow}>
-                                        <Text style={styles.vecKnnKey}>Euclidean Distance:</Text>
-                                        <Text style={styles.vecKnnVal}>{dist.toFixed(4)}</Text>
-                                      </View>
-                                      <View style={styles.vecKnnRow}>
-                                        <Text style={styles.vecKnnKey}>Vector Similarity:</Text>
-                                        <Text style={styles.vecKnnVal}>{(sim * 100).toFixed(1)}%</Text>
-                                      </View>
-
-                                      <Text style={styles.vecKnnVerdict}>
-                                        Among the available pets, {pet.name} is the #{item.neighborRank} nearest neighbor to the user's feature vector.
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </View>
-                              );
-                            })()}
                           </View>
-                        )}
+
+                          {/* Model Ensemble Weights Visualization (Fixed weights) */}
+                          <View style={styles.weightsBarSection}>
+                            <Text style={styles.weightsSectionLabel}>Model Contribution Weights:</Text>
+                            
+                            {/* KNN weight bar */}
+                            <View style={styles.weightBarRow}>
+                              <View style={styles.weightBarLabelCol}>
+                                <Text style={styles.weightBarName}>K-Nearest Neighbors</Text>
+                                <Text style={styles.weightBarPercent}>40% weight</Text>
+                              </View>
+                              <View style={styles.weightTrack}>
+                                <View style={[styles.weightFillKnn, { width: '40%' }]} />
+                              </View>
+                              <View style={styles.weightContribRow}>
+                                <Text style={styles.weightContribLabel}>Contribution:</Text>
+                                <Text style={styles.weightContribVal}>
+                                  +{(item.knn?.contribution ?? ((item.similarity ?? 0) * 0.4)).toFixed(4)} ({((item.knn?.contribution ?? ((item.similarity ?? 0) * 0.4)) * 100).toFixed(1)}%)
+                                </Text>
+                              </View>
+                            </View>
+
+                            {/* RF weight bar */}
+                            <View style={styles.weightBarRow}>
+                              <View style={styles.weightBarLabelCol}>
+                                <Text style={styles.weightBarName}>Random Forest</Text>
+                                <Text style={styles.weightBarPercent}>35% weight</Text>
+                              </View>
+                              <View style={styles.weightTrack}>
+                                <View style={[styles.weightFillRf, { width: '35%' }]} />
+                              </View>
+                              <View style={styles.weightContribRow}>
+                                <Text style={styles.weightContribLabel}>Contribution:</Text>
+                                <Text style={styles.weightContribVal}>
+                                  +{(item.randomForest?.contribution ?? 0).toFixed(4)} ({((item.randomForest?.contribution ?? 0) * 100).toFixed(1)}%)
+                                </Text>
+                              </View>
+                            </View>
+
+                            {/* LR weight bar */}
+                            <View style={styles.weightBarRow}>
+                              <View style={styles.weightBarLabelCol}>
+                                <Text style={styles.weightBarName}>Logistic Regression</Text>
+                                <Text style={styles.weightBarPercent}>25% weight</Text>
+                              </View>
+                              <View style={styles.weightTrack}>
+                                <View style={[styles.weightFillLr, { width: '25%' }]} />
+                              </View>
+                              <View style={styles.weightContribRow}>
+                                <Text style={styles.weightContribLabel}>Contribution:</Text>
+                                <Text style={styles.weightContribVal}>
+                                  +{(item.logisticRegression?.contribution ?? 0).toFixed(4)} ({((item.logisticRegression?.contribution ?? 0) * 100).toFixed(1)}%)
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+
+                          {/* Separate Individual Model Predictions (Distinct from weights!) */}
+                          <View style={styles.modelPredictionsSection}>
+                            <Text style={styles.predictionsSectionLabel}>Individual Model Predictions:</Text>
+                            <View style={styles.predictionsGrid}>
+                              <View style={styles.predItem}>
+                                <Text style={styles.predLabel}>KNN Similarity</Text>
+                                <Text style={styles.predValue}>
+                                  {((item.knn?.similarity ?? item.similarity ?? 0) * 100).toFixed(1)}%
+                                </Text>
+                              </View>
+                              <View style={styles.predItem}>
+                                <Text style={styles.predLabel}>RF Probability</Text>
+                                <Text style={styles.predValue}>
+                                  {item.randomForest?.probability !== undefined ? `${(item.randomForest.probability * 100).toFixed(1)}%` : 'N/A'}
+                                </Text>
+                              </View>
+                              <View style={styles.predItem}>
+                                <Text style={styles.predLabel}>LR Probability</Text>
+                                <Text style={styles.predValue}>
+                                  {item.logisticRegression?.probability !== undefined ? `${(item.logisticRegression.probability * 100).toFixed(1)}%` : 'N/A'}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+
+                          {/* Final Score Banner */}
+                          <View style={styles.finalScoreBanner}>
+                            <View style={styles.finalScoreLeft}>
+                              <Text style={styles.finalScoreFormulaHeader}>Ensemble Equation:</Text>
+                              <Text style={styles.finalScoreFormulaMath} numberOfLines={1}>
+                                (KNN × 0.40) + (RF × 0.35) + (LR × 0.25)
+                              </Text>
+                            </View>
+                            <View style={styles.finalScoreRightBadge}>
+                              <Text style={styles.finalScoreBadgeTitle}>FINAL SCORE</Text>
+                              <Text style={styles.finalScoreBadgeNum}>{item.score}%</Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        {/* 2. CARD 1: KNN ANALYSIS */}
+                        <View style={styles.analysisCard}>
+                          <View style={styles.analysisCardHeader}>
+                            <View style={styles.analysisTitleRow}>
+                              <Text style={styles.analysisCardIcon}>🧠</Text>
+                              <View style={{ flex: 1 }}>
+                                <Text style={styles.analysisCardTitle}>KNN ANALYSIS</Text>
+                                <Text style={styles.analysisCardSubtitle}>K-Nearest Neighbors Instance Matching</Text>
+                              </View>
+                            </View>
+                            <View style={styles.knnKTag}>
+                              <Text style={styles.knnKTagText}>K = 5</Text>
+                            </View>
+                          </View>
+
+                          <View style={styles.metricGrid}>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Distance Metric:</Text>
+                              <Text style={styles.metricValue}>Euclidean</Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Euclidean Distance (d):</Text>
+                              <Text style={styles.metricValueMono}>
+                                {typeof item.distance === 'number' ? item.distance.toFixed(4) : (item.knn?.distance?.toFixed(4) ?? '0.0000')}
+                              </Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>KNN Similarity:</Text>
+                              <Text style={styles.metricValueHighlight}>
+                                {((item.knn?.similarity ?? item.similarity ?? 0) * 100).toFixed(2)}%
+                              </Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Neighbor Rank:</Text>
+                              <Text style={styles.metricValue}>
+                                #{item.neighborRank || 1} Nearest Neighbor
+                              </Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Model Weight:</Text>
+                              <Text style={styles.metricValue}>40%</Text>
+                            </View>
+                            <View style={[styles.metricGridRow, styles.contribHighlightRow]}>
+                              <Text style={styles.contribLabel}>KNN Contribution (Sim × 0.40):</Text>
+                              <Text style={styles.contribValue}>
+                                +{(item.knn?.contribution ?? ((item.similarity ?? 0) * 0.4)).toFixed(4)}
+                                {' '}({((item.knn?.contribution ?? ((item.similarity ?? 0) * 0.4)) * 100).toFixed(2)}%)
+                              </Text>
+                            </View>
+                          </View>
+
+                          {/* Button: View Calculation */}
+                          <TouchableOpacity
+                            style={styles.calcToggleBtn}
+                            onPress={() => setExpandedKnnCalcId((prev) => (prev === pet.id ? null : pet.id))}
+                            activeOpacity={0.8}
+                          >
+                            <Text style={styles.calcToggleBtnText}>
+                              {expandedKnnCalcId === pet.id ? 'Hide Calculation ▴' : 'View Calculation ▾'}
+                            </Text>
+                          </TouchableOpacity>
+
+                          {/* KNN Detailed Calculation Box */}
+                          {expandedKnnCalcId === pet.id && (() => {
+                            const uVec = item.userVectorCoordinates || [];
+                            const pVec = item.vectorCoordinates || [];
+                            const featNames = item.featureNames || [];
+                            const dist = typeof item.distance === 'number' ? item.distance : (item.knn?.distance ?? 0);
+                            const sim = item.knn?.similarity ?? item.similarity ?? 0;
+                            
+                            const rows: { index: number; name: string; uVal: number; pVal: number; diff: number; diffSq: number }[] = [];
+                            let sumSq = 0;
+                            const count = Math.min(21, Math.max(uVec.length, pVec.length));
+                            for (let i = 0; i < count; i++) {
+                              const u = uVec[i] ?? 0;
+                              const p = pVec[i] ?? 0;
+                              const diff = u - p;
+                              const diffSq = diff * diff;
+                              sumSq += diffSq;
+                              const fKey = featNames[i] || `Feature ${i}`;
+                              const fName = FEATURE_DISPLAY_NAMES[fKey] || fKey;
+                              rows.push({ index: i, name: fName, uVal: u, pVal: p, diff, diffSq });
+                            }
+
+                            const showAll = showAllKnnFeaturesId === pet.id;
+                            const nonZeroRows = rows.filter((r) => r.diffSq > 0.0001);
+                            const displayedRows = showAll ? rows : (nonZeroRows.length > 0 ? nonZeroRows : rows.slice(0, 7));
+
+                            return (
+                              <View style={styles.calcDetailsContainer}>
+                                <Text style={styles.calcSectionTitle}>Euclidean Distance Calculation</Text>
+                                <View style={styles.calcFormulaBlock}>
+                                  <Text style={styles.calcFormulaLine}>distance = √( Σ (userFeature[i] − petFeature[i])² )</Text>
+                                  <Text style={styles.calcFormulaLine}>similarity = 1 / (1 + distance)</Text>
+                                </View>
+
+                                <Text style={styles.calcSubhead}>Feature-by-Feature Calculation:</Text>
+                                <View style={styles.calcTable}>
+                                  {displayedRows.map((r) => (
+                                    <View key={r.index} style={styles.calcTableRow}>
+                                      <View style={styles.calcTableRowLeft}>
+                                        <Text style={styles.calcFeatureNum}>[{r.index}]</Text>
+                                        <Text style={styles.calcFeatureName} numberOfLines={1}>{r.name}</Text>
+                                      </View>
+                                      <View style={styles.calcTableRowRight}>
+                                        <Text style={styles.calcDiffMath}>
+                                          ({r.uVal.toFixed(2)} − {r.pVal.toFixed(2)})² = {r.diffSq.toFixed(4)}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                  ))}
+                                </View>
+
+                                {rows.length > nonZeroRows.length && (
+                                  <TouchableOpacity
+                                    onPress={() => setShowAllKnnFeaturesId((prev) => (prev === pet.id ? null : pet.id))}
+                                    style={styles.showMoreFeaturesBtn}
+                                  >
+                                    <Text style={styles.showMoreFeaturesText}>
+                                      {showAll ? 'Show Only Contributing Features' : `Show All 21 Features (${rows.length - nonZeroRows.length} with diff = 0)`}
+                                    </Text>
+                                  </TouchableOpacity>
+                                )}
+
+                                <View style={styles.calcSummaryBox}>
+                                  <Text style={styles.calcSummaryLine}>
+                                    Sum of squared differences = {sumSq.toFixed(4)}
+                                  </Text>
+                                  <Text style={styles.calcSummaryLine}>
+                                    Distance = √({sumSq.toFixed(4)}) = {dist.toFixed(4)}
+                                  </Text>
+                                  <Text style={styles.calcSummaryLineHighlight}>
+                                    Similarity = 1 / (1 + {dist.toFixed(4)}) = {sim.toFixed(4)} ({(sim * 100).toFixed(2)}%)
+                                  </Text>
+                                  <Text style={styles.calcSummaryLineContribution}>
+                                    Contribution = {sim.toFixed(4)} × 0.40 = +{(sim * 0.40).toFixed(4)}
+                                  </Text>
+                                </View>
+                              </View>
+                            );
+                          })()}
+                        </View>
+
+                        {/* 3. CARD 2: RANDOM FOREST ANALYSIS */}
+                        <View style={styles.analysisCard}>
+                          <View style={styles.analysisCardHeader}>
+                            <View style={styles.analysisTitleRow}>
+                              <Text style={styles.analysisCardIcon}>🌲</Text>
+                              <View style={{ flex: 1 }}>
+                                <Text style={styles.analysisCardTitle}>RANDOM FOREST ANALYSIS</Text>
+                                <Text style={styles.analysisCardSubtitle}>Non-Linear Decision Tree Ensemble</Text>
+                              </View>
+                            </View>
+                            <View style={styles.rfBadge}>
+                              <Text style={styles.rfBadgeText}>30 Trees</Text>
+                            </View>
+                          </View>
+
+                          <View style={styles.metricGrid}>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Total Estimators (Trees):</Text>
+                              <Text style={styles.metricValue}>30 Decision Trees</Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Maximum Tree Depth:</Text>
+                              <Text style={styles.metricValue}>6 Levels</Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Prediction Probability (Class 1):</Text>
+                              <Text style={styles.metricValueHighlight}>
+                                {item.randomForest?.probability !== undefined ? `${(item.randomForest.probability * 100).toFixed(2)}%` : 'N/A'}
+                              </Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Model Weight:</Text>
+                              <Text style={styles.metricValue}>35%</Text>
+                            </View>
+                            <View style={[styles.metricGridRow, styles.contribHighlightRow]}>
+                              <Text style={styles.contribLabel}>RF Contribution (Prob × 0.35):</Text>
+                              <Text style={styles.contribValue}>
+                                +{(item.randomForest?.contribution ?? 0).toFixed(4)}
+                                {' '}({((item.randomForest?.contribution ?? 0) * 100).toFixed(2)}%)
+                              </Text>
+                            </View>
+                          </View>
+
+                          <Text style={styles.modelExplanationText}>
+                            "The 30 decision trees evaluate the feature vector using their learned thresholds. The final RF probability is the average class-1 probability across the trees."
+                          </Text>
+
+                          {/* Button: View Tree Calculation */}
+                          <TouchableOpacity
+                            style={styles.calcToggleBtn}
+                            onPress={() => setExpandedRfCalcId((prev) => (prev === pet.id ? null : pet.id))}
+                            activeOpacity={0.8}
+                          >
+                            <Text style={styles.calcToggleBtnText}>
+                              {expandedRfCalcId === pet.id ? 'Hide Tree Calculation ▴' : 'View Tree Calculation ▾'}
+                            </Text>
+                          </TouchableOpacity>
+
+                          {/* Tree Trace Details */}
+                          {expandedRfCalcId === pet.id && (() => {
+                            const pFeatures = (item.pairwiseFeatures && item.pairwiseFeatures.length >= 25)
+                              ? item.pairwiseFeatures
+                              : (typeof extractPairwiseFeatures === 'function' ? extractPairwiseFeatures(currentQuestionnaire, pet) : []);
+                            const traces = (typeof traceRandomForestTrees === 'function' ? traceRandomForestTrees(pFeatures) : []) || [];
+                            const showAll = showAllRfTreesId === pet.id;
+                            const displayedTraces = showAll ? traces : traces.slice(0, 5);
+
+                            return (
+                              <View style={styles.calcDetailsContainer}>
+                                <Text style={styles.calcSectionTitle}>Decision Tree Path Tracing</Text>
+                                <Text style={styles.calcSubtitle}>
+                                  The Random Forest model consists of 30 learned decision trees. Below are the decision paths and thresholds evaluating this pet:
+                                </Text>
+
+                                {displayedTraces.map((t: any) => (
+                                  <View key={t.treeIndex} style={styles.treeTraceCard}>
+                                    <View style={styles.treeTraceHeader}>
+                                      <Text style={styles.treeTraceTitle}>Tree #{t.treeIndex}</Text>
+                                      <Text style={styles.treeLeafProb}>
+                                        Leaf P(Match): {((t.leafProbability ?? 0.5) * 100).toFixed(1)}%
+                                      </Text>
+                                    </View>
+                                    <View style={styles.treePathSteps}>
+                                      {(t.steps || []).map((st: any, sIdx: number) => (
+                                        <View key={sIdx} style={styles.treeStepRow}>
+                                          <Text style={styles.treeStepNum}>{sIdx + 1}.</Text>
+                                          <Text style={styles.treeStepText}>
+                                            <Text style={styles.treeStepFeature}>{st.featureName}</Text> ({(st.featureValue ?? 0).toFixed(2)}) {st.goesLeft ? '≤' : '>'} {(st.threshold ?? 0).toFixed(2)} → <Text style={{ color: st.goesLeft ? PetConnectColors.primary : '#16A34A', fontWeight: '700' }}>{st.goesLeft ? 'Left branch' : 'Right branch'}</Text>
+                                          </Text>
+                                        </View>
+                                      ))}
+                                    </View>
+                                  </View>
+                                ))}
+
+                                <Text style={styles.treesEvaluatedNotice}>
+                                  {showAll ? 'Showing all 30 evaluated decision trees' : 'Showing first 5 representative trees out of 30'}
+                                </Text>
+
+                                <TouchableOpacity
+                                  onPress={() => setShowAllRfTreesId((prev) => (prev === pet.id ? null : pet.id))}
+                                  style={styles.showMoreFeaturesBtn}
+                                >
+                                  <Text style={styles.showMoreFeaturesText}>
+                                    {showAll ? 'Show Fewer Trees (First 5) ▴' : 'Show All 30 Decision Trees ▾'}
+                                  </Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.calcSummaryBox}>
+                                  <Text style={styles.calcSummaryLine}>
+                                    Average of 30 trees = {(item.randomForest?.probability ?? 0).toFixed(4)}
+                                  </Text>
+                                  <Text style={styles.calcSummaryLineContribution}>
+                                    Contribution = {(item.randomForest?.probability ?? 0).toFixed(4)} × 0.35 = +{(item.randomForest?.contribution ?? 0).toFixed(4)}
+                                  </Text>
+                                </View>
+                              </View>
+                            );
+                          })()}
+                        </View>
+
+                        {/* 4. CARD 3: LOGISTIC REGRESSION ANALYSIS */}
+                        <View style={styles.analysisCard}>
+                          <View style={styles.analysisCardHeader}>
+                            <View style={styles.analysisTitleRow}>
+                              <Text style={styles.analysisCardIcon}>📈</Text>
+                              <View style={{ flex: 1 }}>
+                                <Text style={styles.analysisCardTitle}>LOGISTIC REGRESSION ANALYSIS</Text>
+                                <Text style={styles.analysisCardSubtitle}>Standardized Linear Logit with Sigmoid Activation</Text>
+                              </View>
+                            </View>
+                            <View style={styles.lrBadge}>
+                              <Text style={styles.lrBadgeText}>StandardScaler</Text>
+                            </View>
+                          </View>
+
+                          <View style={styles.metricGrid}>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Feature Dimension:</Text>
+                              <Text style={styles.metricValue}>25 Pairwise Features</Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Feature Scaler:</Text>
+                              <Text style={styles.metricValue}>StandardScaler (μ, σ)</Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Activation Function:</Text>
+                              <Text style={styles.metricValue}>Sigmoid: 1 / (1 + e⁻ᶻ)</Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Probability Output:</Text>
+                              <Text style={styles.metricValueHighlight}>
+                                {item.logisticRegression?.probability !== undefined ? `${(item.logisticRegression.probability * 100).toFixed(2)}%` : 'N/A'}
+                              </Text>
+                            </View>
+                            <View style={styles.metricGridRow}>
+                              <Text style={styles.metricLabel}>Model Weight:</Text>
+                              <Text style={styles.metricValue}>25%</Text>
+                            </View>
+                            <View style={[styles.metricGridRow, styles.contribHighlightRow]}>
+                              <Text style={styles.contribLabel}>LR Contribution (Prob × 0.25):</Text>
+                              <Text style={styles.contribValue}>
+                                +{(item.logisticRegression?.contribution ?? 0).toFixed(4)}
+                                {' '}({((item.logisticRegression?.contribution ?? 0) * 100).toFixed(2)}%)
+                              </Text>
+                            </View>
+                          </View>
+
+                          {/* Button: View Feature Contributions */}
+                          <TouchableOpacity
+                            style={styles.calcToggleBtn}
+                            onPress={() => setExpandedLrCalcId((prev) => (prev === pet.id ? null : pet.id))}
+                            activeOpacity={0.8}
+                          >
+                            <Text style={styles.calcToggleBtnText}>
+                              {expandedLrCalcId === pet.id ? 'Hide Feature Contributions ▴' : 'View Feature Contributions ▾'}
+                            </Text>
+                          </TouchableOpacity>
+
+                          {/* LR Feature Contributions Breakdown */}
+                          {expandedLrCalcId === pet.id && (() => {
+                            const pFeatures = (item.pairwiseFeatures && item.pairwiseFeatures.length >= 25)
+                              ? item.pairwiseFeatures
+                              : (typeof extractPairwiseFeatures === 'function' ? extractPairwiseFeatures(currentQuestionnaire, pet) : []);
+                            const lrTrace = (typeof getLogisticRegressionTrace === 'function' ? getLogisticRegressionTrace(pFeatures) : null) || {
+                              intercept: 0.7327,
+                              logit: 0,
+                              probability: item.logisticRegression?.probability ?? 0.5,
+                              features: [],
+                              topPositive: [],
+                              topNegative: [],
+                            };
+                            const showAll = showAllLrFeaturesId === pet.id;
+
+                            return (
+                              <View style={styles.calcDetailsContainer}>
+                                <Text style={styles.calcSectionTitle}>Standardized Feature & Logit Calculation</Text>
+                                <View style={styles.calcFormulaBlock}>
+                                  <Text style={styles.calcFormulaLine}>z_i = (x_i − μ_i) / σ_i</Text>
+                                  <Text style={styles.calcFormulaLine}>logit = β_0 + Σ β_i · z_i</Text>
+                                  <Text style={styles.calcFormulaLine}>Probability = 1 / (1 + e⁻ᶻ)</Text>
+                                </View>
+
+                                <View style={styles.lrMathSummaryRow}>
+                                  <Text style={styles.lrMathItem}>• Intercept (β₀): {(lrTrace.intercept ?? 0.7327).toFixed(4)}</Text>
+                                  <Text style={styles.lrMathItem}>• Computed Logit (z): {(lrTrace.logit ?? 0).toFixed(4)}</Text>
+                                </View>
+
+                                <Text style={styles.calcSubhead}>Strongest Positive Compatibility Drivers:</Text>
+                                <View style={styles.lrDriversList}>
+                                  {(lrTrace.topPositive || []).map((f: any) => (
+                                    <View key={f.index} style={styles.lrDriverRow}>
+                                      <View style={styles.lrDriverLeft}>
+                                        <Text style={styles.lrDriverName} numberOfLines={1}>{f.name}</Text>
+                                        <Text style={styles.lrDriverSub}>Raw: {(f.rawValue ?? 0).toFixed(2)} • z: {(f.standardizedValue ?? 0).toFixed(2)} • β: {(f.weight ?? 0).toFixed(2)}</Text>
+                                      </View>
+                                      <Text style={styles.lrDriverPositive}>+{(f.contribution ?? 0).toFixed(4)}</Text>
+                                    </View>
+                                  ))}
+                                </View>
+
+                                <Text style={[styles.calcSubhead, { marginTop: 10 }]}>Strongest Negative Compatibility Drivers:</Text>
+                                <View style={styles.lrDriversList}>
+                                  {(lrTrace.topNegative || []).map((f: any) => (
+                                    <View key={f.index} style={styles.lrDriverRow}>
+                                      <View style={styles.lrDriverLeft}>
+                                        <Text style={styles.lrDriverName} numberOfLines={1}>{f.name}</Text>
+                                        <Text style={styles.lrDriverSub}>Raw: {(f.rawValue ?? 0).toFixed(2)} • z: {(f.standardizedValue ?? 0).toFixed(2)} • β: {(f.weight ?? 0).toFixed(2)}</Text>
+                                      </View>
+                                      <Text style={styles.lrDriverNegative}>{(f.contribution ?? 0).toFixed(4)}</Text>
+                                    </View>
+                                  ))}
+                                </View>
+
+                                {showAll && (
+                                  <View style={styles.lrAllFeaturesBox}>
+                                    <Text style={styles.calcSubhead}>All 25 Standardized Features:</Text>
+                                    {(lrTrace.features || []).map((f: any) => (
+                                      <View key={f.index} style={styles.lrAllRow}>
+                                        <Text style={styles.lrAllIndex}>[{f.index}]</Text>
+                                        <Text style={styles.lrAllName} numberOfLines={1}>{f.name}</Text>
+                                        <Text style={styles.lrAllContrib}>
+                                          {(f.contribution ?? 0) >= 0 ? `+${(f.contribution ?? 0).toFixed(4)}` : (f.contribution ?? 0).toFixed(4)}
+                                        </Text>
+                                      </View>
+                                    ))}
+                                  </View>
+                                )}
+
+                                <TouchableOpacity
+                                  onPress={() => setShowAllLrFeaturesId((prev) => (prev === pet.id ? null : pet.id))}
+                                  style={styles.showMoreFeaturesBtn}
+                                >
+                                  <Text style={styles.showMoreFeaturesText}>
+                                    {showAll ? 'Hide Full Feature List ▴' : 'Show All 25 Standardized Feature Coefficients ▾'}
+                                  </Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.calcSummaryBox}>
+                                  <Text style={styles.calcSummaryLine}>
+                                    Logit z = {(lrTrace.logit ?? 0).toFixed(4)}
+                                  </Text>
+                                  <Text style={styles.calcSummaryLineHighlight}>
+                                    Sigmoid = 1 / (1 + e^(-({(lrTrace.logit ?? 0).toFixed(4)}))) = {(lrTrace.probability ?? (item.logisticRegression?.probability ?? 0.5)).toFixed(4)} ({((lrTrace.probability ?? (item.logisticRegression?.probability ?? 0.5)) * 100).toFixed(2)}%)
+                                  </Text>
+                                  <Text style={styles.calcSummaryLineContribution}>
+                                    Contribution = {(lrTrace.probability ?? (item.logisticRegression?.probability ?? 0.5)).toFixed(4)} × 0.25 = +{((lrTrace.probability ?? (item.logisticRegression?.probability ?? 0.5)) * 0.25).toFixed(4)}
+                                  </Text>
+                                </View>
+                              </View>
+                            );
+                          })()}
+                        </View>
+
+                        {/* 5. SECTION: FEATURE / VECTOR DETAILS */}
+                        <View style={styles.analysisCard}>
+                          <View style={styles.analysisCardHeader}>
+                            <View style={styles.analysisTitleRow}>
+                              <Text style={styles.analysisCardIcon}>📐</Text>
+                              <View style={{ flex: 1 }}>
+                                <Text style={styles.analysisCardTitle}>FEATURE / VECTOR DETAILS</Text>
+                                <Text style={styles.analysisCardSubtitle}>Normalized ℝ²¹ Feature Embedding</Text>
+                              </View>
+                            </View>
+                            <View style={styles.vectorDimBadge}>
+                              <Text style={styles.vectorDimBadgeText}>21 Dimensions</Text>
+                            </View>
+                          </View>
+
+                          <Text style={styles.modelExplanationText}>
+                            "Both user preferences and pet characteristics are mapped into the same 21-dimensional normalized vector space for distance evaluation."
+                          </Text>
+
+                          <TouchableOpacity
+                            style={styles.calcToggleBtn}
+                            onPress={() => setExpandedVectorPetId((prev) => (prev === pet.id ? null : pet.id))}
+                            activeOpacity={0.8}
+                          >
+                            <Text style={styles.calcToggleBtnText}>
+                              {expandedVectorPetId === pet.id ? 'Hide Feature Vector ▴' : 'View Feature Vector ▾'}
+                            </Text>
+                          </TouchableOpacity>
+
+                          {expandedVectorPetId === pet.id && (() => {
+                            const uVec = item.userVectorCoordinates || [];
+                            const pVec = item.vectorCoordinates || [];
+                            const featNames = item.featureNames || [];
+                            const count = Math.min(21, Math.max(uVec.length, pVec.length));
+                            
+                            const vectorRows = [];
+                            for (let i = 0; i < count; i++) {
+                              const u = uVec[i] ?? 0;
+                              const p = pVec[i] ?? 0;
+                              const diff = u - p;
+                              const fKey = featNames[i] || `Feature ${i}`;
+                              const fName = FEATURE_DISPLAY_NAMES[fKey] || fKey;
+                              vectorRows.push({ index: i, name: fName, u, p, diff });
+                            }
+
+                            return (
+                              <View style={styles.calcDetailsContainer}>
+                                {/* User & Pet Vector Arrays */}
+                                <View style={styles.rawVectorBlock}>
+                                  <Text style={styles.rawVectorLabel}>USER VECTOR (U):</Text>
+                                  <Text style={styles.rawVectorText} selectable>
+                                    [{uVec.slice(0, 21).map(n => n.toFixed(2)).join(', ')}]
+                                  </Text>
+                                </View>
+
+                                <View style={styles.rawVectorBlock}>
+                                  <Text style={styles.rawVectorLabel}>PET VECTOR (P) — {pet.name.toUpperCase()}:</Text>
+                                  <Text style={styles.rawVectorText} selectable>
+                                    [{pVec.slice(0, 21).map(n => n.toFixed(2)).join(', ')}]
+                                  </Text>
+                                </View>
+
+                                <Text style={styles.calcSubhead}>21-Dimensional Feature Breakdown:</Text>
+                                <View style={styles.vectorCardsList}>
+                                  {vectorRows.map((r) => (
+                                    <View key={r.index} style={styles.vectorRowCard}>
+                                      <View style={styles.vectorRowTop}>
+                                        <Text style={styles.vectorRowIndex}>#{r.index}</Text>
+                                        <Text style={styles.vectorRowName} numberOfLines={1}>{r.name}</Text>
+                                        <Text style={[
+                                          styles.vectorRowDiff,
+                                          Math.abs(r.diff) < 0.01 ? styles.diffZero : (r.diff > 0 ? styles.diffPositive : styles.diffNegative)
+                                        ]}>
+                                          Δ {r.diff >= 0 ? `+${r.diff.toFixed(2)}` : r.diff.toFixed(2)}
+                                        </Text>
+                                      </View>
+                                      <View style={styles.vectorValuesRow}>
+                                        <Text style={styles.vectorValItem}>User: <Text style={styles.vectorValNum}>{r.u.toFixed(2)}</Text></Text>
+                                        <Text style={styles.vectorValItem}>Pet: <Text style={styles.vectorValNum}>{r.p.toFixed(2)}</Text></Text>
+                                        <Text style={styles.vectorValItem}>Diff²: <Text style={styles.vectorValNum}>{(r.diff * r.diff).toFixed(4)}</Text></Text>
+                                      </View>
+                                    </View>
+                                  ))}
+                                </View>
+                              </View>
+                            );
+                          })()}
+                        </View>
+
+                        {/* 6. FINAL ENSEMBLE CALCULATION CARD */}
+                        <View style={styles.finalCalcCard}>
+                          <View style={styles.finalCalcHeader}>
+                            <Text style={styles.finalCalcIcon}>✨</Text>
+                            <Text style={styles.finalCalcTitle}>FINAL ENSEMBLE CALCULATION</Text>
+                          </View>
+
+                          <Text style={styles.finalCalcStepLabel}>Step 1: Mathematical Formula</Text>
+                          <View style={styles.formulaRowCard}>
+                            <Text style={styles.formulaRowText}>
+                              Final Ensemble = (KNN × 0.40) + (RF × 0.35) + (LR × 0.25)
+                            </Text>
+                          </View>
+
+                          <Text style={styles.finalCalcStepLabel}>Step 2: Real Runtime Value Substitution</Text>
+                          <View style={styles.formulaRowCard}>
+                            <Text style={styles.formulaSubstLine}>
+                              = ({((item.knn?.similarity ?? item.similarity ?? 0)).toFixed(4)} × 0.40)
+                            </Text>
+                            <Text style={styles.formulaSubstLine}>
+                              + ({(item.randomForest?.probability ?? 0).toFixed(4)} × 0.35)
+                            </Text>
+                            <Text style={styles.formulaSubstLine}>
+                              + ({(item.logisticRegression?.probability ?? 0).toFixed(4)} × 0.25)
+                            </Text>
+                          </View>
+
+                          <Text style={styles.finalCalcStepLabel}>Step 3: Weighted Summation</Text>
+                          <View style={styles.formulaRowCard}>
+                            <Text style={styles.formulaSumLine}>
+                              = {(item.knn?.contribution ?? ((item.similarity ?? 0) * 0.4)).toFixed(4)} (KNN)
+                            </Text>
+                            <Text style={styles.formulaSumLine}>
+                              + {(item.randomForest?.contribution ?? 0).toFixed(4)} (RF)
+                            </Text>
+                            <Text style={styles.formulaSumLine}>
+                              + {(item.logisticRegression?.contribution ?? 0).toFixed(4)} (LR)
+                            </Text>
+                            <View style={styles.formulaDivider} />
+                            <Text style={styles.formulaTotalLine}>
+                              = {(item.ensemble?.score !== undefined ? item.ensemble.score : (item.score / 100)).toFixed(4)}
+                            </Text>
+                          </View>
+
+                          {/* Final Score Result Card */}
+                          <View style={styles.finalResultHighlightCard}>
+                            <View style={styles.finalResultTextCol}>
+                              <Text style={styles.finalResultLabel}>Final Match Percentage</Text>
+                              <Text style={styles.finalResultSub}>ensembleScore × 100</Text>
+                            </View>
+                            <View style={styles.finalResultScoreBadge}>
+                              <Text style={styles.finalResultScoreText}>{item.score}%</Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        {/* 7. COMPATIBILITY DIMENSIONS ACCORDION */}
+                        <View style={styles.compatDimensionsSection}>
+                          <Text style={styles.compatSectionHeading}>LIFESTYLE & COMPATIBILITY DIMENSIONS</Text>
+                          <View style={styles.compatList}>
+                            {[
+                              { icon: '🏠', title: 'Living situation', data: item.scoreBreakdown.livingSituation },
+                              { icon: '🏃', title: 'Activity level', data: item.scoreBreakdown.activityLevel },
+                              { icon: '📍', title: 'Location proximity', data: item.scoreBreakdown.location },
+                              { icon: '👨‍👩‍👧', title: 'Household dynamic', data: item.scoreBreakdown.household },
+                              { icon: '🎓', title: 'Care experience', data: item.scoreBreakdown.experience },
+                              { icon: '❤️', title: 'Personality match', data: item.scoreBreakdown.personality },
+                            ].map((dim, dIdx) => (
+                              <View key={dIdx} style={styles.compatItem}>
+                                <View style={styles.compatItemHeader}>
+                                  <View style={styles.compatTitleContainer}>
+                                    <Text style={styles.compatItemIcon}>{dim.icon}</Text>
+                                    <Text style={styles.compatItemTitle} numberOfLines={1}>
+                                      {dim.title}
+                                    </Text>
+                                  </View>
+                                  <View
+                                    style={[
+                                      styles.dimStatusPill,
+                                      dim.data.label === 'Excellent' && styles.dimStatusExcellent,
+                                      dim.data.label === 'Good' && styles.dimStatusGood,
+                                      dim.data.label === 'Compatible' && styles.dimStatusCompatible,
+                                      dim.data.label === 'Needs Attention' && styles.dimStatusNeedsAttention,
+                                    ]}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.dimStatusText,
+                                        dim.data.label === 'Excellent' && styles.dimStatusTextExcellent,
+                                        dim.data.label === 'Good' && styles.dimStatusTextGood,
+                                        dim.data.label === 'Compatible' && styles.dimStatusTextCompatible,
+                                        dim.data.label === 'Needs Attention' && styles.dimStatusTextNeedsAttention,
+                                      ]}
+                                      numberOfLines={1}
+                                    >
+                                      {dim.data.label}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <Text style={styles.compatItemDetail}>
+                                  {dim.data.detail}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
                       </View>
                     )}
 
@@ -1882,362 +2259,942 @@ const styles = StyleSheet.create({
     color: '#B91C1C',
   },
 
-  // Dedicated KNN Section Styles
-  knnSectionCard: {
-    marginTop: 14,
-    padding: 12,
+  // 0. Match Breakdown Header Card
+  breakdownHeaderCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 140, 97, 0.3)',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 140, 97, 0.35)',
+    gap: 4,
+  },
+  breakdownHeaderTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#752501',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  breakdownPetName: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: PetConnectColors.onSurface,
+    letterSpacing: -0.2,
+  },
+  breakdownPetCategory: {
+    fontSize: 12,
+    color: PetConnectColors.onSurfaceVariant,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  breakdownScoreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(221, 193, 183, 0.3)',
+    gap: 8,
+  },
+  breakdownScoreLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+    flexShrink: 1,
+  },
+  breakdownScoreBadge: {
+    backgroundColor: PetConnectColors.primary,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    flexShrink: 0,
+  },
+  breakdownScoreBadgeText: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+
+  // 1. Final Ensemble Card Styles
+  finalEnsembleCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 140, 97, 0.35)',
     shadowColor: '#752501',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.06,
     shadowRadius: 6,
     elevation: 2,
+    gap: 12,
   },
-  knnHeaderRow: {
+  ensembleHeaderRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: 8,
   },
-  knnHeaderLeft: {
-    flex: 1,
+  ensembleCardTitle: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#752501',
+    letterSpacing: 0.5,
     flexShrink: 1,
+  },
+  ensemblePill: {
+    backgroundColor: 'rgba(255, 140, 97, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  ensemblePillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: PetConnectColors.primary,
+  },
+  weightsBarSection: {
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    borderRadius: 12,
+    padding: 10,
+    gap: 10,
+  },
+  weightsSectionLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: PetConnectColors.onSurface,
+    marginBottom: 2,
+  },
+  weightBarRow: {
     gap: 4,
   },
-  knnTitleRow: {
+  weightBarLabelCol: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  weightBarName: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+  },
+  weightBarPercent: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: PetConnectColors.primary,
+  },
+  weightTrack: {
+    height: 8,
+    backgroundColor: 'rgba(221, 193, 183, 0.35)',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  weightFillKnn: {
+    height: '100%',
+    backgroundColor: '#0284C7',
+    borderRadius: 4,
+  },
+  weightFillRf: {
+    height: '100%',
+    backgroundColor: '#16A34A',
+    borderRadius: 4,
+  },
+  weightFillLr: {
+    height: '100%',
+    backgroundColor: '#9333EA',
+    borderRadius: 4,
+  },
+  weightContribRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  weightContribLabel: {
+    fontSize: 10,
+    color: '#89726A',
+  },
+  weightContribVal: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
+  // Separate Model Predictions Grid
+  modelPredictionsSection: {
+    gap: 6,
+  },
+  predictionsSectionLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: PetConnectColors.onSurface,
+  },
+  predictionsGrid: {
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'space-between',
+  },
+  predItem: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 140, 97, 0.08)',
+    borderRadius: 10,
+    padding: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 140, 97, 0.2)',
+  },
+  predLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#89726A',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  predValue: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: PetConnectColors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
+  // Final Score Banner
+  finalScoreBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 140, 97, 0.12)',
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 140, 97, 0.3)',
+    gap: 8,
   },
-  knnTitleIcon: {
-    fontSize: 13,
+  finalScoreLeft: {
+    flex: 1,
+    flexShrink: 1,
   },
-  knnSectionTitle: {
-    fontSize: 11,
+  finalScoreFormulaHeader: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#752501',
+    marginBottom: 2,
+  },
+  finalScoreFormulaMath: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  finalScoreRightBadge: {
+    backgroundColor: PetConnectColors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+  finalScoreBadgeTitle: {
+    fontSize: 8,
+    fontWeight: '800',
+    color: 'rgba(255, 255, 255, 0.85)',
+    letterSpacing: 0.5,
+  },
+  finalScoreBadgeNum: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+
+  // 2. Individual Model Analysis Cards
+  analysisCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.5)',
+    shadowColor: '#332E2C',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+    gap: 10,
+  },
+  analysisCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  analysisTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+    flexShrink: 1,
+  },
+  analysisCardIcon: {
+    fontSize: 18,
+  },
+  analysisCardTitle: {
+    fontSize: 12,
     fontWeight: '900',
     color: '#752501',
     letterSpacing: 0.5,
   },
-  knnKBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255, 140, 97, 0.15)',
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  knnKBadgeText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: PetConnectColors.primary,
-  },
-  knnHeaderRight: {
-    alignItems: 'flex-end',
-    flexShrink: 0,
-  },
-  knnRankBadgeText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: PetConnectColors.primary,
-  },
-  knnRankSubText: {
+  analysisCardSubtitle: {
     fontSize: 10,
     color: PetConnectColors.onSurfaceVariant,
-    fontWeight: '600',
+    fontWeight: '500',
   },
-  knnDivider: {
-    height: 1,
-    backgroundColor: 'rgba(221, 193, 183, 0.35)',
-    marginVertical: 10,
+  knnKTag: {
+    backgroundColor: 'rgba(2, 132, 199, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    flexShrink: 0,
   },
-  knnMetricRow: {
+  knnKTagText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#0284C7',
+  },
+  rfBadge: {
+    backgroundColor: 'rgba(22, 163, 74, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  rfBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#16A34A',
+  },
+  lrBadge: {
+    backgroundColor: 'rgba(147, 51, 234, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  lrBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#9333EA',
+  },
+  vectorDimBadge: {
+    backgroundColor: 'rgba(255, 140, 97, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  vectorDimBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: PetConnectColors.primary,
+  },
+
+  // Metric Grid Rows
+  metricGrid: {
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    borderRadius: 10,
+    padding: 10,
+    gap: 6,
+  },
+  metricGridRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 5,
-    gap: 12,
+    alignItems: 'center',
+    gap: 8,
   },
-  knnMetricLeft: {
+  metricLabel: {
+    fontSize: 11,
+    color: PetConnectColors.onSurfaceVariant,
+    fontWeight: '600',
     flex: 1,
     flexShrink: 1,
   },
-  knnMetricLabel: {
-    fontSize: 12,
+  metricValue: {
+    fontSize: 11,
     fontWeight: '700',
     color: PetConnectColors.onSurface,
-  },
-  knnMetricSub: {
-    fontSize: 10,
-    color: '#89726A',
-    marginTop: 1,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  knnMetricRight: {
-    alignItems: 'flex-end',
     flexShrink: 0,
   },
-  knnMetricVal: {
-    fontSize: 13,
+  metricValueMono: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    flexShrink: 0,
+  },
+  metricValueHighlight: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: PetConnectColors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    flexShrink: 0,
+  },
+  contribHighlightRow: {
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(221, 193, 183, 0.3)',
+    marginTop: 2,
+  },
+  contribLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#752501',
+    flex: 1,
+    flexShrink: 1,
+  },
+  contribValue: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: PetConnectColors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    flexShrink: 0,
+  },
+
+  modelExplanationText: {
+    fontSize: 11,
+    fontStyle: 'italic',
+    color: '#89726A',
+    lineHeight: 16,
+    paddingHorizontal: 2,
+  },
+
+  // Calculation Toggle Buttons
+  calcToggleBtn: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 140, 97, 0.12)',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 140, 97, 0.3)',
+    marginTop: 2,
+  },
+  calcToggleBtnText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: PetConnectColors.primary,
+  },
+
+  // Detailed Calculation Containers
+  calcDetailsContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    borderRadius: 12,
+    padding: 10,
+    gap: 8,
+    marginTop: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.3)',
+  },
+  calcSectionTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#752501',
+    letterSpacing: 0.3,
+  },
+  calcSubtitle: {
+    fontSize: 10,
+    color: PetConnectColors.onSurfaceVariant,
+    lineHeight: 14,
+  },
+  calcFormulaBlock: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.35)',
+    gap: 3,
+  },
+  calcFormulaLine: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: PetConnectColors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 15,
+  },
+  calcSubhead: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: PetConnectColors.onSurface,
+    marginTop: 2,
+  },
+
+  // Feature by feature calculation table
+  calcTable: {
+    gap: 4,
+  },
+  calcTableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(221, 193, 183, 0.2)',
+    gap: 8,
+  },
+  calcTableRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flex: 1,
+    flexShrink: 1,
+  },
+  calcFeatureNum: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#89726A',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  calcFeatureName: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+    flexShrink: 1,
+  },
+  calcTableRowRight: {
+    flexShrink: 0,
+  },
+  calcDiffMath: {
+    fontSize: 10,
+    color: PetConnectColors.onSurfaceVariant,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
+  showMoreFeaturesBtn: {
+    alignSelf: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.5)',
+    marginTop: 4,
+  },
+  showMoreFeaturesText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: PetConnectColors.primary,
+    textAlign: 'center',
+  },
+
+  calcSummaryBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 140, 97, 0.3)',
+    gap: 4,
+    marginTop: 4,
+  },
+  calcSummaryLine: {
+    fontSize: 10,
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 15,
+    flexWrap: 'wrap',
+  },
+  calcSummaryLineHighlight: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: PetConnectColors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 15,
+    flexWrap: 'wrap',
+  },
+  calcSummaryLineContribution: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#16A34A',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 16,
+    marginTop: 2,
+    flexWrap: 'wrap',
+  },
+
+  // Tree Trace Styles
+  treeTraceCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.4)',
+    gap: 4,
+  },
+  treeTraceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(221, 193, 183, 0.25)',
+    paddingBottom: 4,
+  },
+  treeTraceTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#16A34A',
+  },
+  treeLeafProb: {
+    fontSize: 10,
     fontWeight: '800',
     color: PetConnectColors.onSurface,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
-  knnMetricSubVal: {
-    fontSize: 10,
-    color: PetConnectColors.onSurfaceVariant,
-    marginTop: 1,
+  treePathSteps: {
+    gap: 3,
+    paddingTop: 2,
   },
-  knnNoticeText: {
-    fontSize: 11,
+  treeStepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 4,
+  },
+  treeStepNum: {
+    fontSize: 9,
+    color: '#89726A',
+    width: 14,
+  },
+  treeStepText: {
+    fontSize: 9,
+    color: PetConnectColors.onSurfaceVariant,
+    flex: 1,
+    flexWrap: 'wrap',
+    lineHeight: 14,
+  },
+  treeStepFeature: {
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+  },
+  treesEvaluatedNotice: {
+    fontSize: 10,
     fontStyle: 'italic',
     color: '#89726A',
     textAlign: 'center',
-    marginTop: 8,
-    marginBottom: 6,
-  },
-  vectorToggleBtn: {
-    alignSelf: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: 'rgba(255, 140, 97, 0.1)',
-    borderRadius: 8,
-    marginTop: 4,
-  },
-  vectorToggleBtnText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: PetConnectColors.primary,
-  },
-  vectorDetailsBox: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(221, 193, 183, 0.4)',
-    gap: 12,
-  },
-  vecBlock: {
-    gap: 5,
-  },
-  vecBlockBadge: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: '#752501',
-    letterSpacing: 0.5,
-  },
-  vecDimensionRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 8,
-    marginTop: 2,
-  },
-  vecDimensionBig: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: PetConnectColors.primary,
-  },
-  vecDimensionSub: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: PetConnectColors.onSurface,
-  },
-  vecDescriptionText: {
-    fontSize: 11,
-    color: PetConnectColors.onSurfaceVariant,
-    lineHeight: 16,
-    marginTop: 2,
-  },
-  vecInnerDivider: {
-    height: 1,
-    backgroundColor: 'rgba(221, 193, 183, 0.25)',
     marginVertical: 4,
   },
-  vecIndexContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.025)',
+
+  // Logistic Regression Drivers Styles
+  lrMathSummaryRow: {
+    flexDirection: 'column',
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.3)',
     gap: 4,
   },
-  vecIndexRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  vecIndexNumber: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: PetConnectColors.primary,
-    width: 20,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  vecIndexArrow: {
-    fontSize: 10,
-    color: '#89726A',
-  },
-  vecIndexTitle: {
-    fontSize: 11,
-    color: PetConnectColors.onSurface,
-    fontWeight: '600',
-  },
-  vecCodeBlock: {
-    fontSize: 11,
-    color: PetConnectColors.onSurface,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    backgroundColor: 'rgba(0, 0, 0, 0.035)',
-    padding: 8,
-    borderRadius: 8,
-    lineHeight: 16,
-  },
-  vecFormulaHeader: {
+  lrMathItem: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#89726A',
-    marginTop: 2,
-  },
-  vecFormulaBox: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: PetConnectColors.primary,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    backgroundColor: 'rgba(255, 140, 97, 0.1)',
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 2,
-  },
-  vecSubHeading: {
-    fontSize: 11,
-    fontWeight: '700',
     color: PetConnectColors.onSurface,
-    marginTop: 6,
-    marginBottom: 2,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 15,
+    flexWrap: 'wrap',
   },
-  vecTableContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.02)',
-    borderRadius: 8,
-    padding: 8,
-    gap: 6,
+  lrDriversList: {
+    gap: 4,
   },
-  vecTableRow: {
-    paddingBottom: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(221, 193, 183, 0.2)',
-  },
-  vecTableRowHeader: {
+  lrDriverRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.25)',
+    gap: 8,
   },
-  vecTableIndex: {
+  lrDriverLeft: {
+    flex: 1,
+    flexShrink: 1,
+  },
+  lrDriverName: {
     fontSize: 10,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+  },
+  lrDriverSub: {
+    fontSize: 9,
+    color: '#89726A',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    marginTop: 1,
+  },
+  lrDriverPositive: {
+    fontSize: 11,
     fontWeight: '800',
-    color: PetConnectColors.primary,
+    color: '#16A34A',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    flexShrink: 0,
+  },
+  lrDriverNegative: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#DC2626',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    flexShrink: 0,
+  },
+  lrAllFeaturesBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.3)',
+    marginTop: 4,
+  },
+  lrAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(221, 193, 183, 0.15)',
+    gap: 6,
+  },
+  lrAllIndex: {
+    fontSize: 9,
+    color: '#89726A',
     width: 20,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
-  vecTableFeature: {
+  lrAllName: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: PetConnectColors.onSurface,
+    flex: 1,
+  },
+  lrAllContrib: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
+  // Raw Vectors Block
+  rawVectorBlock: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.35)',
+    gap: 3,
+  },
+  rawVectorLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#752501',
+    letterSpacing: 0.3,
+  },
+  rawVectorText: {
+    fontSize: 10,
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 14,
+  },
+
+  // Responsive Vector Cards List (No horizontal scroll!)
+  vectorCardsList: {
+    gap: 6,
+  },
+  vectorRowCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.3)',
+    gap: 4,
+  },
+  vectorRowTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 6,
+  },
+  vectorRowIndex: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#89726A',
+    width: 22,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  vectorRowName: {
     fontSize: 11,
     fontWeight: '700',
     color: PetConnectColors.onSurface,
     flex: 1,
+    flexShrink: 1,
   },
-  vecTableWeight: {
+  vectorRowDiff: {
     fontSize: 10,
-    color: '#89726A',
+    fontWeight: '800',
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    flexShrink: 0,
   },
-  vecTableRowSub: {
-    marginTop: 2,
-    paddingLeft: 20,
+  diffZero: {
+    color: '#6B7280',
   },
-  vecTableMathText: {
-    fontSize: 10,
-    color: PetConnectColors.onSurfaceVariant,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  diffPositive: {
+    color: '#D97706',
   },
-  vecDistanceResultCard: {
-    backgroundColor: 'rgba(255, 140, 97, 0.12)',
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 8,
-    gap: 4,
+  diffNegative: {
+    color: '#2563EB',
   },
-  vecSumFormulaText: {
-    fontSize: 11,
-    color: PetConnectColors.onSurface,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  vecFinalDistanceText: {
-    fontSize: 13,
-    fontWeight: '900',
-    color: PetConnectColors.primary,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  vecScaleNote: {
-    fontSize: 10,
-    color: '#89726A',
-    marginTop: 2,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  vecSubstitutionCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.035)',
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 6,
-    gap: 3,
-  },
-  vecSubstLine: {
-    fontSize: 11,
-    color: PetConnectColors.onSurface,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  vecSubstHighlight: {
-    fontSize: 13,
-    fontWeight: '900',
-    color: PetConnectColors.primary,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    marginTop: 4,
-  },
-  vecNoteBox: {
-    backgroundColor: 'rgba(255, 140, 97, 0.06)',
-    padding: 8,
-    borderRadius: 8,
-    gap: 3,
-  },
-  vecNoteLine: {
-    fontSize: 11,
-    fontStyle: 'italic',
-    color: '#89726A',
-    lineHeight: 15,
-  },
-  vecKnnSummaryCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.025)',
-    padding: 10,
-    borderRadius: 8,
-    gap: 5,
-  },
-  vecKnnRow: {
+  vectorValuesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    paddingTop: 3,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(221, 193, 183, 0.2)',
   },
-  vecKnnKey: {
-    fontSize: 11,
-    color: PetConnectColors.onSurfaceVariant,
+  vectorValItem: {
+    fontSize: 9,
+    color: '#89726A',
   },
-  vecKnnVal: {
-    fontSize: 11,
+  vectorValNum: {
     fontWeight: '800',
     color: PetConnectColors.onSurface,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
-  vecKnnVerdict: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: PetConnectColors.primary,
-    marginTop: 4,
-    lineHeight: 16,
+
+  // Final Calculation Card Styles
+  finalCalcCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 140, 97, 0.35)',
+    shadowColor: '#752501',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+    gap: 8,
   },
+  finalCalcHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  finalCalcIcon: {
+    fontSize: 16,
+  },
+  finalCalcTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#752501',
+    letterSpacing: 0.5,
+  },
+  finalCalcStepLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: PetConnectColors.onSurfaceVariant,
+    marginTop: 2,
+  },
+  formulaRowCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.3)',
+    gap: 3,
+  },
+  formulaRowText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: PetConnectColors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 15,
+  },
+  formulaSubstLine: {
+    fontSize: 10,
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 15,
+  },
+  formulaSumLine: {
+    fontSize: 10,
+    color: PetConnectColors.onSurface,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    lineHeight: 15,
+  },
+  formulaDivider: {
+    height: 1,
+    backgroundColor: 'rgba(221, 193, 183, 0.4)',
+    marginVertical: 4,
+  },
+  formulaTotalLine: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: PetConnectColors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  finalResultHighlightCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 140, 97, 0.15)',
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 140, 97, 0.4)',
+    marginTop: 6,
+  },
+  finalResultTextCol: {
+    flex: 1,
+  },
+  finalResultLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#752501',
+  },
+  finalResultSub: {
+    fontSize: 9,
+    color: '#89726A',
+  },
+  finalResultScoreBadge: {
+    backgroundColor: PetConnectColors.primary,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 12,
+    shadowColor: PetConnectColors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  finalResultScoreText: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+
+  // Compatibility Dimensions Accordion
+  compatDimensionsSection: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(221, 193, 183, 0.4)',
+    gap: 10,
+  },
+  compatSectionHeading: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#752501',
+    letterSpacing: 0.5,
+  },
+
   viewPetBtn: {
     flexDirection: 'row',
     alignItems: 'center',

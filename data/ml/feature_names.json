@@ -1,0 +1,29 @@
+{
+  "features": [
+    "species_match",
+    "age_preference_match",
+    "size_preference_match",
+    "activity_alignment",
+    "time_energy_compatibility",
+    "living_space_compatibility",
+    "household_kid_compatibility",
+    "household_senior_compatibility",
+    "experience_competence_fit",
+    "trait_preference_overlap",
+    "location_proximity_score",
+    "pet_age_normalized",
+    "pet_size_ordinal",
+    "pet_activity_ordinal",
+    "adopter_activity_ordinal",
+    "adopter_time_ordinal",
+    "pet_trait_friendly",
+    "pet_trait_calm",
+    "pet_trait_playful",
+    "pet_trait_active",
+    "pet_trait_kid_friendly",
+    "pet_trait_pet_friendly",
+    "pet_trait_house_trained",
+    "pet_trait_apartment_friendly",
+    "pet_trait_special_needs"
+  ]
+}

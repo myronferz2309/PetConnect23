@@ -57,6 +57,7 @@ export interface AdoptionApplication {
   experience: string;
   reason: string;
   status: ApplicationStatus;
+  paymentMethod?: string;
   submittedAt: string;
   createdAt?: number;
   lastMessageText?: string;
@@ -88,7 +89,7 @@ export interface UserProfile {
   updatedAt?: number;
 }
 
-export type PetPreference = 'dogs' | 'cats' | 'others' | 'any';
+export type PetPreference = 'dogs' | 'cats' | 'birds' | 'fish' | 'others' | 'any';
 export type LivingSituation = 'apartment' | 'house' | 'other';
 export type HouseholdType = 'alone' | 'couple' | 'family' | 'family_children' | 'seniors';
 export type PetExperience = 'first_time' | 'some_experience' | 'experienced';
@@ -127,7 +128,7 @@ export interface AIMatchScoreBreakdown {
 
 export interface AIMatchResult {
   pet: Pet;
-  score: number; // 0 to 100 (percentage derived from 1 - distance / maxDistance)
+  score: number; // 0 to 100 (Final Match Percentage derived from multi-algorithm ensemble)
   scoreBreakdown: AIMatchScoreBreakdown;
   aiExplanation: string;
   aiConsideration?: string;
@@ -141,6 +142,26 @@ export interface AIMatchResult {
   featureNames?: string[];
   metricWeights?: number[];
   normalizationScaleDistance?: number;
+
+  // Multi-Algorithm Engine Metadata
+  knn?: {
+    distance: number;
+    similarity: number;
+    contribution: number;
+  };
+  randomForest?: {
+    probability: number;
+    contribution: number;
+  };
+  logisticRegression?: {
+    probability: number;
+    contribution: number;
+  };
+  ensemble?: {
+    score: number;
+    percentage: number;
+  };
+  pairwiseFeatures?: number[];
 }
 
 export type PetCareCategory =

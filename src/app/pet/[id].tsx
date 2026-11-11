@@ -9,6 +9,8 @@ import {
   Dimensions,
   Platform,
   Alert,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -50,9 +52,12 @@ export default function PetDetailsScreen() {
     hasUserApplied,
     openAuthModal,
     deletePet,
+    adoptPet,
   } = usePet();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const [isAdopting, setIsAdopting] = useState(false);
   const showcaseScrollRef = useRef<ScrollView>(null);
   const isUserInteracting = useRef<boolean>(false);
   const interactionTimeout = useRef<any>(null);
@@ -74,7 +79,6 @@ export default function PetDetailsScreen() {
       </SafeAreaView>
     );
   }
-
   const saved = isPetSaved(pet.id);
   const primaryImg = getValidPetImageUrl(pet.imageUrl, pet.category);
   const rawAdditional = pet.imageUrls || pet.additionalImages || [];
@@ -134,15 +138,32 @@ export default function PetDetailsScreen() {
       return;
     }
 
-    if (alreadyApplied) {
-      router.push('/my-applications' as any);
+    if (isAdopted) {
+      Alert.alert('Already Adopted', `${pet.name} has already found a forever home.`);
       return;
     }
 
-    router.push({
-      pathname: '/apply/[id]' as any,
-      params: { id: pet.id },
-    });
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleConfirmAdoption = () => {
+    setIsConfirmModalVisible(false);
+    Alert.alert(
+      'Pet Adopted Successfully! 🐾',
+      `Congratulations! You have adopted ${pet.name}. Thank you for giving them a loving forever home!`,
+      [
+        {
+          text: 'Done',
+          onPress: () => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)' as any);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleDeletePet = () => {
@@ -621,10 +642,104 @@ export default function PetDetailsScreen() {
             activeOpacity={0.9}
           >
             <Heart size={20} color="#FFFFFF" fill="#FFFFFF" />
-            <Text style={styles.adoptButtonText}>Adopt {pet.name}</Text>
+            <Text style={styles.adoptButtonText}>Adopt / Buy {pet.name}</Text>
           </TouchableOpacity>
         )}
       </View>
+      {/* 28.1 ADOPTION CONFIRMATION MODAL */}
+      <Modal
+        visible={isConfirmModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => !isAdopting && setIsConfirmModalVisible(false)}
+      >
+        <View style={styles.confirmModalOverlay}>
+          <View style={styles.confirmModalContent}>
+            <View style={styles.confirmModalHeader}>
+              <View style={styles.confirmIconCircle}>
+                <HeartHandshake size={24} color={PetConnectColors.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.confirmModalTitle}>Confirm Pet Adoption</Text>
+                <Text style={styles.confirmModalSubtitle}>Review adoption and payment details</Text>
+              </View>
+            </View>
+
+            <View style={styles.confirmPetCard}>
+              <PetImage
+                uri={pet.imageUrl}
+                category={pet.category}
+                style={styles.confirmPetThumb}
+                contentFit="cover"
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.confirmPetName}>{pet.name}</Text>
+                <Text style={styles.confirmPetBreed}>{pet.breed} • {pet.age} • {pet.gender}</Text>
+                <View style={styles.confirmLocationRow}>
+                  <MapPin size={12} color={PetConnectColors.onSurfaceVariant} />
+                  <Text style={styles.confirmLocationText}>{pet.location}</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.confirmInfoRow}>
+              <Text style={styles.confirmInfoLabel}>Adoption Status:</Text>
+              <View style={styles.statusAvailableBadge}>
+                <Text style={styles.statusAvailableText}>● Available</Text>
+              </View>
+            </View>
+
+            <View style={styles.confirmInfoRow}>
+              <Text style={styles.confirmInfoLabel}>Adoption Fee:</Text>
+              <Text style={styles.confirmFeeValue}>
+                {pet.adoptionFee && pet.adoptionFee > 0 ? `₹${pet.adoptionFee.toLocaleString('en-IN')}` : 'Free Adoption'}
+              </Text>
+            </View>
+
+            <View style={styles.adoptionNoteBox}>
+              <View style={styles.adoptionNoteHeader}>
+                <PawPrint size={18} color={PetConnectColors.primary} />
+                <Text style={styles.adoptionNoteTitle}>DIRECT ADOPTION</Text>
+              </View>
+              <Text style={styles.adoptionNoteDescription}>
+                You are connecting directly with {pet.name}'s caregiver. No online payment, application fees, or transactions required.
+              </Text>
+            </View>
+
+            <View style={styles.adopterSummaryRow}>
+              <Text style={styles.adopterSummaryLabel}>Adopter:</Text>
+              <Text style={styles.adopterSummaryValue}>{userProfile?.name} ({userProfile?.email})</Text>
+            </View>
+
+            <View style={styles.confirmModalActions}>
+              <TouchableOpacity
+                onPress={() => setIsConfirmModalVisible(false)}
+                disabled={isAdopting}
+                style={styles.confirmCancelBtn}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.confirmCancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleConfirmAdoption}
+                disabled={isAdopting}
+                style={styles.confirmAdoptBtn}
+                activeOpacity={0.9}
+              >
+                {isAdopting ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <>
+                    <CheckCircle size={18} color="#FFFFFF" />
+                    <Text style={styles.confirmAdoptBtnText}>Confirm Adoption</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1238,4 +1353,183 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+
+  confirmModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  confirmModalContent: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: PetConnectColors.surface,
+    borderRadius: 24,
+    padding: 22,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  confirmModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  confirmIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: PetConnectColors.secondaryContainer,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  confirmModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+  },
+  confirmModalSubtitle: {
+    fontSize: 12,
+    color: PetConnectColors.onSurfaceVariant,
+    marginTop: 2,
+  },
+  confirmPetCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: PetConnectColors.surfaceContainer,
+    padding: 12,
+    borderRadius: 16,
+    marginBottom: 14,
+  },
+  confirmPetThumb: {
+    width: 54,
+    height: 54,
+    borderRadius: 12,
+  },
+  confirmPetName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: PetConnectColors.onSurface,
+  },
+  confirmPetBreed: {
+    fontSize: 12,
+    color: PetConnectColors.onSurfaceVariant,
+    marginTop: 2,
+  },
+  confirmLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  confirmLocationText: {
+    fontSize: 11,
+    color: PetConnectColors.onSurfaceVariant,
+  },
+  confirmInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  confirmInfoLabel: {
+    fontSize: 13,
+    color: PetConnectColors.onSurfaceVariant,
+  },
+  statusAvailableBadge: {
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 10,
+  },
+  statusAvailableText: {
+    color: '#1B5E20',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  confirmFeeValue: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: PetConnectColors.primary,
+  },
+  adoptionNoteBox: {
+    backgroundColor: 'rgba(255, 140, 97, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 140, 97, 0.3)',
+    borderRadius: 16,
+    padding: 14,
+    marginVertical: 12,
+  },
+  adoptionNoteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  adoptionNoteTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: PetConnectColors.primary,
+    letterSpacing: 0.8,
+  },
+  adoptionNoteDescription: {
+    fontSize: 12,
+    color: PetConnectColors.onSurfaceVariant,
+    lineHeight: 18,
+  },
+  adopterSummaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 6,
+    marginBottom: 16,
+  },
+  adopterSummaryLabel: {
+    fontSize: 12,
+    color: PetConnectColors.onSurfaceVariant,
+  },
+  adopterSummaryValue: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: PetConnectColors.onSurface,
+  },
+  confirmModalActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  confirmCancelBtn: {
+    flex: 1,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 1,
+    borderColor: PetConnectColors.outlineVariant,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  confirmCancelBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: PetConnectColors.onSurfaceVariant,
+  },
+  confirmAdoptBtn: {
+    flex: 2,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: PetConnectColors.primary,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  confirmAdoptBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+
 });

@@ -678,7 +678,7 @@ export const knnRecommendationService = {
     // IF petPreference = 'any' -> all species eligible
     // ------------------------------------------------------------------------
     const eligiblePets = availablePets.filter((p) => {
-      const pref = questionnaire.petPreference || 'any';
+      const pref = normText(questionnaire.petPreference || 'any');
       if (pref === 'any') return true;
 
       const cat = normText(p.category);
@@ -687,6 +687,8 @@ export const knnRecommendationService = {
 
       if (pref === 'dogs') return isDog;
       if (pref === 'cats') return isCat;
+      if (pref === 'birds') return cat.includes('bird');
+      if (pref === 'fish') return cat.includes('fish');
       if (pref === 'others') return !isDog && !isCat;
       return true;
     });

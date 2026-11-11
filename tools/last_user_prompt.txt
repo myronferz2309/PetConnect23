@@ -1,0 +1,148 @@
+<USER_REQUEST>
+============================================================
+PART 28 — ADOPTION / PURCHASE FLOW AUDIT
+============================================================
+
+The PetConnect app must have a complete end-to-end pet adoption flow.
+
+Expected user flow:
+
+Pet Details
+    ↓
+Adopt / Buy
+    ↓
+Confirmation screen/dialog
+    ↓
+User confirms adoption
+    ↓
+"Pet Successfully Adopted" confirmation
+    ↓
+Payment method shown:
+"Cash on Delivery"
+    ↓
+Pet adoption is persisted
+    ↓
+Pet becomes unavailable/adopted
+    ↓
+Pet is removed from Featured Pets
+    ↓
+Pet is removed from available recommendations
+    ↓
+Pet cannot be adopted again
+
+Audit the COMPLETE implementation.
+
+------------------------------------------------------------
+28.1 ADOPTION CONFIRMATION
+------------------------------------------------------------
+
+When the user selects Adopt/Buy:
+
+Verify that the user receives a confirmation step before the adoption
+is finalized.
+
+The user should clearly see:
+
+• Pet name
+• Pet information
+• Adoption status
+• Payment method
+
+Payment method must display:
+
+"CASH ON DELIVERY"
+
+Do not introduce online payment processing.
+
+------------------------------------------------------------
+28.2 SUCCESS SCREEN
+------------------------------------------------------------
+
+After successful confirmation, show a clear success state:
+
+"Pet Successfully Adopted!"
+
+or an equivalent existing PetConnect success message.
+
+Show:
+
+• Pet name
+• Adoption confirmation
+• Payment method: Cash on Delivery
+
+Do not claim the adoption succeeded until the database update succeeds.
+
+------------------------------------------------------------
+28.3 FIRESTORE STATUS UPDATE
+------------------------------------------------------------
+
+This is CRITICAL.
+
+After successful adoption, update the corresponding Firestore pet
+record.
+
+Expected behavior:
+
+status = "adopted"
+
+Use the existing Firestore service/repository architec
+<truncated 5741 bytes>
+el
+• Logistic Regression model
+• ensemble weights
+• trained JSON artifact
+• 49-pet training/reference dataset
+
+Only the production Firestore pet status/candidate availability should
+change after adoption.
+
+============================================================
+PART 29 — FINAL PROJECT FLOW VERIFICATION
+============================================================
+
+After fixing the adoption flow, verify the complete application:
+
+AUTHENTICATION
+      ↓
+HOME
+      ↓
+PET DISCOVERY
+      ↓
+PET DETAILS
+      ↓
+AI RECOMMENDATION
+      ↓
+ADOPTION
+      ↓
+CONFIRMATION
+      ↓
+CASH ON DELIVERY
+      ↓
+SUCCESSFUL ADOPTION
+      ↓
+FIRESTORE STATUS = ADOPTED
+      ↓
+REMOVED FROM AVAILABLE/FEATURED
+      ↓
+NO LONGER AI RECOMMENDED
+
+This entire flow must work without requiring an app restart.
+
+Report exactly which files were modified for the adoption functionality.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-10-01T01:33:05+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\myron\OneDrive\Documents\PetConnect23\data\petconnect_training_dataset.csv (LANGUAGE_UNSPECIFIED)
+Cursor is on line: 10
+Other open documents:
+- c:\Users\myron\OneDrive\Documents\PetConnect23\src\app\ai-match.tsx (LANGUAGE_UNSPECIFIED)
+- c:\Users\myron\OneDrive\Documents\PetConnect23\src\services\authService.ts (LANGUAGE_UNSPECIFIED)
+- c:\Users\myron\OneDrive\Documents\PetConnect23\src\app\(tabs)\profile.tsx (LANGUAGE_UNSPECIFIED)
+- c:\Users\myron\OneDrive\Documents\PetConnect23\src\services\firebase.ts (LANGUAGE_UNSPECIFIED)
+- c:\Users\myron\OneDrive\Documents\PetConnect23\.easignore (LANGUAGE_UNSPECIFIED)
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from Gemini 3.8 Flash (Medium) to Gemini 3.8 Flash (High). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>
